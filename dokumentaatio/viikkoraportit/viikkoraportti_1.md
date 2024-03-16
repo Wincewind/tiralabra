@@ -9,4 +9,5 @@ Yritän seuraavalla viikolla implementoida ainakin Dijkstran algoritmin ja yksin
 | ----- | ------------- | ------ |
 | 13.3.  | 2,5h | Aloitusluento, aiheisiin perehtymistä |
 | 14.3.  | 4h | Dokumentaatiota, aiheen algoritmiin ja toimintaperiaatteeseen perehtymistä |
-| Total  | 6,5h |  |
+| 16.3.  | 0,5h | Poetryn alustamista |
+| Total  | 7h |  |
