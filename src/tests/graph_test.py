@@ -38,7 +38,7 @@ class TestGraph(unittest.TestCase):
         neighbours = [n for n in neighbours if n[0].obstacle]
         self.assertEqual(len(neighbours),3)
 
-        self.graph.generate_graph(self.test_graph_5)
-        neighbours = self.graph.nodes[(4,2)]
+        self.graph.generate_graph(self.test_graph_6)
+        neighbours = self.graph.nodes[(1,1)]
         neighbours = [n for n in neighbours if n[0].obstacle]
-        self.assertEqual(len(neighbours),3)
+        self.assertEqual(len(neighbours),4)
