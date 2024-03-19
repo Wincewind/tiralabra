@@ -47,12 +47,12 @@ class Graph:
                     continue
                 self.nodes[node.coords] = []
                 for d, mod in directions.items():
-                    neighbour_coords = (x + mod[0], y + mod[1])
-                    if 0 <= neighbour_coords[0] < len(
-                        row
-                    ) and 0 <= neighbour_coords[1] < len(ascii_graph):
-                        neighbour = Node(
-                            ascii_graph[neighbour_coords[1]][neighbour_coords[0]],
-                            neighbour_coords,
+                    neighbour_xy = (x + mod[0], y + mod[1])
+                    if 0 <= neighbour_xy[0] < len(row) and 0 <= neighbour_xy[1] < len(
+                        ascii_graph
+                    ):
+                        neighbour_node = Node(
+                            ascii_graph[neighbour_xy[1]][neighbour_xy[0]],
+                            neighbour_xy,
                         )
-                        self.nodes[node.coords].append((neighbour, d))
+                        self.nodes[node.coords].append((neighbour_node, d))
