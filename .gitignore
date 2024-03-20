@@ -4,5 +4,6 @@ __pycache__/
 .coverage
 htmlcov
 .env
-src/build/
+src/output/*
 .vscode
+!/**/.gitkeep

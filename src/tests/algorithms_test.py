@@ -3,7 +3,7 @@ from math import sqrt
 from graph import Graph
 from algorithms.dijkstra import dijkstra
 
-class TestGraph(unittest.TestCase):
+class TestAlgorithms(unittest.TestCase):
     def setUp(self):
         self.graph = Graph()
         self.test_graph_1 = [['.','.','.'],

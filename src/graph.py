@@ -24,8 +24,15 @@ class Graph:
 
     def __init__(self,ascii_graph: list=None) -> None:
         self.nodes = {(int,int):[(Node,int)]}
+        self.visited = {(int,int):(int,(int,int))}
         if ascii_graph is not None:
             self.generate_graph(ascii_graph)
+
+    def reset_visited(self):
+        """Apufunktio polunetsintä tulosten tyhjentämiseen,
+        ilman että tarvitsee ladata uutta karttatietoa.
+        """
+        self.visited = {}
 
     def generate_graph(self, ascii_graph: list):
         """Muodostetaan Graph-olio taulukosta ASCII merkkejä.
@@ -36,7 +43,7 @@ class Graph:
              ascii_graph (list): kaksiulotteinen lista ascii merkkejä.
         """
         self.nodes = {}
-        self.visited = {(int,int):(int,(int,int))}
+        self.reset_visited()
         directions = {
             0: (0, -1),
             1: (1, -1),
