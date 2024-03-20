@@ -7,4 +7,5 @@ Kehitin alustavia tietorakenteita ja algoritmeja.
 | ----- | ------------- | ------ |
 | 19.3.  | 4h | Kehitetty verkkolle ja solmuille omat luokat ja näille lyhyitä testejä |
 | 20.3.  | 2h | Implementoitu Dijkstran algoritmi ja täydennetty verkko luokan toteutusta |
-| Total  | 6h |  |
+| 20.3.  | 3,5h | Lisätty IO käsittely ja testejä Moving AI Labin kartta resursseille |
+| Total  | 9,5h |  |
