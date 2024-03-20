@@ -6,4 +6,5 @@ Kehitin alustavia tietorakenteita ja algoritmeja.
 | Päivä | Käytetty aika | Kuvaus |
 | ----- | ------------- | ------ |
 | 19.3.  | 4h | Kehitetty verkkolle ja solmuille omat luokat ja näille lyhyitä testejä |
-| Total  | 4h |  |
+| 20.3.  | 2h | Implementoitu Dijkstran algoritmi ja täydennetty verkko luokan toteutusta |
+| Total  | 6h |  |
