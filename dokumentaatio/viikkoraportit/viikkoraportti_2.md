@@ -1,4 +1,4 @@
-# Viikkoraportti, viikko 1
+# Viikkoraportti, viikko 2
 Kehitin alustavia tietorakenteita ja algoritmeja.
 
 ## Tuntikirjanpito
