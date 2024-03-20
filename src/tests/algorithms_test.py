@@ -1,5 +1,7 @@
 import unittest
+from math import sqrt
 from graph import Graph
+from algorithms.dijkstra import dijkstra
 
 class TestGraph(unittest.TestCase):
     def setUp(self):
@@ -32,13 +34,11 @@ class TestGraph(unittest.TestCase):
                              ['@','G','@'],
                              ['S','@','.']]
 
-    def test_graph_generation(self):
+    def test_dijkstra_pathfinding(self):
         self.graph.generate_graph(self.test_graph_5)
-        neighbours = self.graph.nodes[(4,2)]
-        neighbours = [n for n in neighbours if n[0].obstacle]
-        self.assertEqual(len(neighbours),3)
+        dijkstra((0,3),(5,0),self.graph)
+        self.assertAlmostEqual(self.graph.visited[(5,0)][0],sqrt(2)*3 +2)
 
-        self.graph = Graph(self.test_graph_6)
-        neighbours = self.graph.nodes[(1,1)]
-        neighbours = [n for n in neighbours if n[0].obstacle]
-        self.assertEqual(len(neighbours),4)
+        self.graph.generate_graph(self.test_graph_4)
+        dijkstra((0,3),(6,2),self.graph)
+        self.assertAlmostEqual(self.graph.visited[(6,2)][0],5 + sqrt(2))

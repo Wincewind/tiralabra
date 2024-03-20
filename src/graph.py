@@ -13,13 +13,19 @@ class Node:
 
 class Graph:
     """Verkko-luokka.
-    Nodes on dict-typpiä, missä (x,y)-koordinatti on avain tuple muodossa
-    ja arvoina lista naapureista ja suunnista. suunnat on numeroitu 0-7
+    
+    - nodes on sanakirja, missä (x,y)-koordinaatti on avain
+    ja arvoina lista Node-olio naapureista ja suunnista. Suunnat on numeroitu 0-7
     myötäpäivään alkaen suoraan ylöspäin.
+    - visited on sanakirja, missä (x,y)-koordinaatti on avain ja arvona
+    on tuple muodossa koordinaattiin kuljettu lyhyin matka ja koordinaatti mistä
+    avain-koordinaattiin on kuljettu.
     """
 
-    def __init__(self) -> None:
-        self.nodes = {}
+    def __init__(self,ascii_graph: list=None) -> None:
+        self.nodes = {(int,int):[(Node,int)]}
+        if ascii_graph is not None:
+            self.generate_graph(ascii_graph)
 
     def generate_graph(self, ascii_graph: list):
         """Muodostetaan Graph-olio taulukosta ASCII merkkejä.
@@ -30,6 +36,7 @@ class Graph:
              ascii_graph (list): kaksiulotteinen lista ascii merkkejä.
         """
         self.nodes = {}
+        self.visited = {(int,int):(int,(int,int))}
         directions = {
             0: (0, -1),
             1: (1, -1),
