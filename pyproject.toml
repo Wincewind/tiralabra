@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.10"
 pylint = "^3.1.0"
 pillow = "^10.2.0"
+matplotlib = "^3.8.3"
 
 
 [tool.poetry.group.dev.dependencies]
