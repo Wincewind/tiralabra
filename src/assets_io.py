@@ -1,3 +1,5 @@
+import os
+from pathlib import Path
 import re
 from PIL import Image
 
@@ -93,3 +95,13 @@ def draw_path_onto_map(map_name: str, scen_index: int, scen: dict, visited: dict
         im.save(f"src/output/{map_name}_{str(scen_index)}.png", "PNG")
     except FileNotFoundError as ex:
         print(f"'{map_name}', {ex.strerror}")
+
+
+def get_available_maps():
+    """Hakee listan saatavilla olevista kartoista,
+    assets hakemiston png-tiedostojen perusteella.
+
+    Returns:
+        list: Lista tiedostojen nimiä, ilman tiedostopäätettä.
+    """
+    return [Path(filename).stem for filename in os.listdir("src/assets/images/")]

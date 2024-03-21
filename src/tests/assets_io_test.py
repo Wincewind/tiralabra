@@ -43,3 +43,7 @@ class TestAssetsIO(unittest.TestCase):
         assets_io.draw_path_onto_map(self.map_name,file_idx,scen,graph.visited)
         file_formed = os.path.isfile(f'src/output/{self.map_name}_{file_idx}.png')
         self.assertEqual(file_formed,True)
+
+    def test_get_available_maps(self):
+        maps = assets_io.get_available_maps()
+        self.assertEqual(len(maps),2)
