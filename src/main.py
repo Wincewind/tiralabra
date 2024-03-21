@@ -55,7 +55,7 @@ def main(io):
 suorita 1-10 satunnaista skenaariota (2):"
     choice = io.read(prompt, ["1", "2"])
     if choice == "1":
-        prompt = f"Valitse skenaarion indeksi välillä 0-{len(scens)}:"
+        prompt = f"Valitse skenaarion indeksi välillä 0-{len(scens)-1}:"
         scen_idxs = [str(i) for i in range(len(scens))]
         scens_to_test = [int(io.read(prompt, scen_idxs))]
     else:
