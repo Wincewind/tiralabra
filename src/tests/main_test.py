@@ -25,7 +25,7 @@ class TestMain(unittest.TestCase):
             )
         )
 
-    def test_running_main_program_for_ten_random_scens(self):
+    def test_running_main_program_for_a_random_scen(self):
         io = StubIO(["AR0413SR", "2", "1"])
         main(io)
         print(io.outputs)

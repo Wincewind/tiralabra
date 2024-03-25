@@ -1,7 +1,7 @@
 from time import time
 from random import choices
 import matplotlib.pyplot as plt
-from console_io import ConsoleIO
+from ui.console_io import ConsoleIO
 import assets_io
 from graph import Graph
 from algorithms.dijkstra import dijkstra
