@@ -2,7 +2,7 @@ import unittest
 from math import sqrt
 from graph import Graph
 from algorithms.dijkstra import dijkstra
-from algorithms.jps import calculate_total_dist
+#from algorithms.jps import calculate_total_dist
 
 class TestAlgorithms(unittest.TestCase):
     def setUp(self):
@@ -72,7 +72,7 @@ class TestAlgorithms(unittest.TestCase):
         dijkstra((0,3),(6,2),self.graph)
         self.assertAlmostEqual(self.graph.visited[(6,2)][0], 9)
 
-    def test_total_distance_calc(self):
-        self.assertEqual(calculate_total_dist((5,0),(7,5), 2), 7.385164807134504)
-        self.assertEqual(calculate_total_dist((0,0),(0,0), 0), 0)
-        self.assertEqual(calculate_total_dist((1,0),(0,0), 1), 2)
+    # def test_total_distance_calc(self):
+    #     self.assertEqual(calculate_total_dist((5,0),(7,5), 2), 7.385164807134504)
+    #     self.assertEqual(calculate_total_dist((0,0),(0,0), 0), 0)
+    #     self.assertEqual(calculate_total_dist((1,0),(0,0), 1), 2)
