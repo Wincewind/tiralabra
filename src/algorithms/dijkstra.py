@@ -17,7 +17,7 @@ def dijkstra(start: tuple, goal: tuple, graph: Graph):
         distance, coords = heappop(queue)
         if goal == coords:
             break
-        for neighbour, direction in graph.nodes[coords]:
+        for direction, neighbour  in graph.nodes[coords].items():
             # Kuljettua matkaa täytetään vaaka tai pystysuunnassa
             # yhdellä ja diagonaalisessa suunnassa kahden neliöjuurella
             # 8 desimaalin tarkkuudella. Moving AI Labin skenaarioiden lyhyimmät

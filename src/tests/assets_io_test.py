@@ -27,17 +27,20 @@ class TestAssetsIO(unittest.TestCase):
         self.assertEqual(len(scens),1530)
         self.assertEqual(scens[7]['shortest'], 2.41421356)
 
+    # 6 desimaalin tarkkuudella ovat etäisyydet kaikkiin skenaarioihin
+    # verrattuna yhtä pitkät AR0413SR kartalla, kunhan kulmia ei leikata.
     def test_dijkstra_with_assets(self):
-        graph = Graph(assets_io.read_map(self.map_name))
+        graph = Graph(assets_io.read_map(self.map_name), True)
         scen = choice(assets_io.read_scenarios(self.map_name))
+        graph.reset_visited()
         dijkstra(scen['start'], scen['goal'], graph)
         result = round(graph.visited[scen['goal']][0], 8)
-        self.assertLessEqual(result,
-                             scen['shortest'])
+        self.assertAlmostEqual(result, scen['shortest'], 6)
 
     def test_drawing_found_path(self):
         graph = Graph(assets_io.read_map(self.map_name))
-        scen = choice(assets_io.read_scenarios(self.map_name))
+        #scen = choice(assets_io.read_scenarios(self.map_name))
+        scen = assets_io.read_scenarios(self.map_name)[39]
         dijkstra(scen['start'], scen['goal'], graph)
         file_idx = randint(0,1000000)
         assets_io.draw_path_onto_map(self.map_name,file_idx,scen,graph.visited)

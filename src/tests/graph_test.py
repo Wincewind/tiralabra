@@ -28,17 +28,17 @@ class TestGraph(unittest.TestCase):
                              ['S','@','.','.','.','@','.'],
                              ['.','@','.','.','.','.','.']]
         
-        self.test_graph_6 = [['.','@','.'],
+        self.test_graph_6 = [['','@','.'],
                              ['@','G','@'],
                              ['S','@','.']]
 
     def test_graph_generation(self):
-        self.graph.generate_graph(self.test_graph_5)
+        self.graph.generate_graph(self.test_graph_5, False)
         neighbours = self.graph.nodes[(4,2)]
-        neighbours = [n for n in neighbours if n[0].obstacle]
-        self.assertEqual(len(neighbours),3)
+        neighbours = [n for n in neighbours.items() if n[1].obstacle]
+        self.assertEqual(len(neighbours), 3)
 
         self.graph = Graph(self.test_graph_6)
         neighbours = self.graph.nodes[(1,1)]
-        neighbours = [n for n in neighbours if n[0].obstacle]
+        neighbours = [n for n in neighbours.items() if n[1].obstacle]
         self.assertEqual(len(neighbours),4)
