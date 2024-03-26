@@ -87,7 +87,7 @@ class Graph:
             poistetaan diagonaaliset kaaret, jotka leikaavat esteen kulmaa.
         """
         for direction in range(1, 8, 2):
-            if direction not in self.nodes[coords]:
+            if direction not in self.nodes[coords] or self.nodes[coords][direction].obstacle:
                 continue
             prev_neighbour = direction - 1
             next_neighbour = 0 if direction == 7 else direction + 1

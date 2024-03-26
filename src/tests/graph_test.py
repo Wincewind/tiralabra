@@ -28,9 +28,9 @@ class TestGraph(unittest.TestCase):
                              ['S','@','.','.','.','@','.'],
                              ['.','@','.','.','.','.','.']]
         
-        self.test_graph_6 = [['','@','.'],
-                             ['@','G','@'],
-                             ['S','@','.']]
+        self.test_graph_6 = [['@','.','@'],
+                             ['.','G','.'],
+                             ['@','S','@']]
 
     def test_graph_generation(self):
         self.graph.generate_graph(self.test_graph_5, False)
