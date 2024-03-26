@@ -45,6 +45,12 @@ class TestAlgorithms(unittest.TestCase):
                              ['S','.','.','.','.','@','.'],
                              ['@','@','@','@','.','.','.']]
 
+        self.test_graph_two_jump_points = [ ['@','.','.','.'],
+                                            ['@','G','@','G'],
+                                            ['S','.','@','.'],
+                                            ['.','G','.','.'],
+                                            ['.','.','.','.']]
+
     def test_dijkstra_pathfinding_with_corner_cuts(self):
         self.graph.generate_graph(self.test_graph_5,False)
         dijkstra((0,3),(5,0),self.graph)
@@ -120,3 +126,36 @@ class TestAlgorithms(unittest.TestCase):
         jps._prune((0,2),(1, n_to_check),self.graph)
         available_n = [n for _,n in self.graph.nodes[n_to_check.coords].items() if not n.pruned]
         self.assertEqual(len(available_n), 4)
+
+    def test_jps_find_straight_jump_point(self):
+        start = (0,3)
+        goal = (6,2)
+        self.graph.generate_graph(self.test_graph_4, False)
+        jump_point = jps._jump(start, 2, start, goal, self.graph)
+        self.assertEqual(jump_point.coords, (5,3))
+
+        # self.graph.generate_graph(self.test_graph_4, True)
+        # jump_point = jps._jump(start, 2, start, goal, self.graph)
+        # self.assertEqual(jump_point.coords, (6,3))
+
+    def test_jps_fail_to_find_straight_jump_point(self):
+        start = (0,3)
+        goal = (5,0)
+        self.graph.generate_graph(self.test_graph_5, False)
+        jump_point = jps._jump(start, 0, start, goal, self.graph)
+        self.assertEqual(jump_point, None)
+
+    def test_jps_find_diagonal_jump_point(self):
+        start = (0,3)
+        goal = (5,0)
+        self.graph.generate_graph(self.test_graph_5, False)
+        jump_point = jps._jump((1,2), 1, start, goal, self.graph)
+        self.assertEqual(jump_point.coords, (3,0))
+
+    def test_jps_identifying_successors(self):
+        start = (0,2)
+        goal = (3,1)
+        self.graph.generate_graph(self.test_graph_two_jump_points, False)
+        successors = jps._identify_successors(start,start,goal,self.graph)
+        self.assertEqual(len(successors), 2)
+        self.assertEqual(sorted([s.coords for s in successors]), [(1,1), (1,3)])
