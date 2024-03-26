@@ -15,6 +15,10 @@ class TestAlgorithms(unittest.TestCase):
                              ['S','G','.'],
                              ['.','.','.']]
         
+        self.test_graph_2_1 = [ ['.','.','.'],
+                                ['@','G','.'],
+                                ['.','S','.']]
+        
         self.test_graph_3 = [['.','.','.'],
                              ['@','G','.'],
                              ['S','.','.']]
@@ -88,6 +92,12 @@ class TestAlgorithms(unittest.TestCase):
         self.graph.generate_graph(self.test_graph_2, False)
         n_to_check = self.graph.nodes[(0,1)][2]
         jps._prune((0,1),(2, n_to_check),self.graph)
+        available_n = [n for _,n in self.graph.nodes[n_to_check.coords].items() if not n.pruned]
+        self.assertEqual(len(available_n), 2)
+
+        self.graph.generate_graph(self.test_graph_2_1, False)
+        n_to_check = self.graph.nodes[(1,2)][0]
+        jps._prune((1,2),(0, n_to_check),self.graph)
         available_n = [n for _,n in self.graph.nodes[n_to_check.coords].items() if not n.pruned]
         self.assertEqual(len(available_n), 2)
 

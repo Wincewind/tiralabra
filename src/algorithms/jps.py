@@ -42,10 +42,10 @@ def _prune(current_node: tuple, neighbour_to_check: tuple, graph: Graph):
     # aina olemaan pidempi, joten tätä ei karsita.
     directions_to_prune.remove(direction)
 
-    prev_neighbour = direction - 1
+    prev_neighbour = 7 if direction - 1 == -1 else direction - 1
     next_neighbour = 0 if direction == 7 else direction + 1
     for d, mod in ((prev_neighbour,-1),(next_neighbour,1)):
-        # Jos tarkasteltavalla naapurilla ja current_nodella onesteitä yhteisinä naapureina,
+        # Jos tarkasteltavalla naapurilla ja current_nodella on esteitä yhteisinä naapureina,
         # tulee tiettyjen suuntien siirtymistä ns. "pakotettuja". Nämä tilanteet on nähtävissä
         # JPS julkaisun kuvista 2 a-d,
         if direction % 2 != 0:
