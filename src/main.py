@@ -47,9 +47,6 @@ def run_scenarios(io, map_name: str, scens_to_test: list, graph: Graph, scens: l
             io.write(
                 f"Skenaarion {i} ratkaisemisessa kului {algorithm[0]} algoritmilla: {end-start} s."
             )
-            io.write(
-                f"Löydetyn polun pituus oli {graph.visited[scen["goal"]][0]}."
-            )
             assets_io.draw_path_onto_map(map_name, i, scen, algorithm[0], graph)
             display_formed_img(map_name, i, algorithm[0])
     return dijkstra_total, jps_total
