@@ -47,6 +47,11 @@ class Graph:
         """
         self.visited = {}
 
+    def reset_pruned(self):
+        for _,neighbours in self.nodes.items():
+            for _, n in neighbours.items():
+                n.pruned = False
+
     def generate_graph(self, ascii_graph: list, remove_corner_cuts=True):
         """Muodostetaan Graph-olio taulukosta ASCII merkkejä.
         Merkkien oletetaan olevan Moving AI Labin materiaalin mukaisia:

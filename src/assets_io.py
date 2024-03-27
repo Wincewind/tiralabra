@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 import re
 from PIL import Image
+from graph import Graph
 
 
 def __reader(file_path: str) -> list:
@@ -62,7 +63,7 @@ def read_scenarios(map_name: str) -> list:
     return scen_list
 
 
-def draw_path_onto_map(map_name: str, scen_index: int, scen: dict, visited: dict):
+def draw_path_onto_map(map_name: str, scen_index: int, scen: dict, algorithm: str, graph: Graph):
     """Piirtää karttaa edustavaan kuvaan löydetyn polun ja käsitellyt solmut.
     Muokattu kuva tallennetaan /src/output/ -kansioon
 
@@ -79,20 +80,24 @@ def draw_path_onto_map(map_name: str, scen_index: int, scen: dict, visited: dict
     on tuple muodossa koordinaattiin kuljettu lyhyin matka ja viereinen koordinaatti mistä
     avain-koordinaattiin on kuljettu.
     """
+    visited = graph.visited
     try:
         im = Image.open(f"src/assets/images/{map_name}.png")
         im = im.resize((512, 512), Image.Resampling.LANCZOS)
         pix = im.load()
         for node in visited:
+            for _, n in graph.nodes[node].items():
+                if not n.obstacle and n.pruned:
+                    pix[n.coords] = (128,128,128)  # Karsitut solmut väri: (Harmaa)
             pix[node] = (0, 255, 255)  # Solmut missä käyty väri: (Cyan)
 
         _, path_node = visited[scen["goal"]]
         while path_node != scen["start"]:
-            pix[path_node] = (255, 0, 255)  # Polku väri: Magenta
+            pix[path_node] = (255, 0, 255)  # Polku väri: (Magenta)
             _, path_node = visited[path_node]
         pix[scen["start"]] = (0, 255, 0)  # Alku väri: Vihreä
         pix[scen["goal"]] = (255, 0, 0)  # Maali väri: Punainen
-        im.save(f"src/output/{map_name}_{str(scen_index)}.png", "PNG")
+        im.save(f"src/output/{map_name}_{str(scen_index)}_{algorithm}.png", "PNG")
     except FileNotFoundError as ex:
         print(f"'{map_name}', {ex.strerror}")
 

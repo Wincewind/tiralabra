@@ -21,7 +21,7 @@ class TestMain(unittest.TestCase):
         main(io)
         self.assertTrue(
             io.outputs[2].startswith(
-                "Skenaarion 777 ratkaisemisessa kului Dijkstran algoritmilla:"
+                "Skenaarion 777 ratkaisemisessa kului dijkstra algoritmilla:"
             )
         )
 
@@ -31,6 +31,6 @@ class TestMain(unittest.TestCase):
         print(io.outputs)
         self.assertTrue(
             io.outputs[-1].startswith(
-                "Dijkstran algoritmilla kesti polunetsinnässä kokonaisuudessaan:"
+                "JPS algoritmilla kesti polunetsinnässä kokonaisuudessaan:"
             )
         )
