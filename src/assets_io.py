@@ -50,6 +50,7 @@ def read_scenarios(map_name: str) -> list:
         - start (tuple): lähdön x,y -koordinaatti
         - goal (tuple): maalin x,y -koordinaatti
         - shortest (int): lyhyin polku start ja goal välillä
+        - dimensions (tuple): kartan leveys ja korkeus pikseleissä
     """
     scen_list = []
     data = __reader(f"src/assets/scens/{map_name}.map.scen")
@@ -59,6 +60,7 @@ def read_scenarios(map_name: str) -> list:
         scen["shortest"] = float(row[0])
         scen["goal"] = (int(row[2]), int(row[1]))
         scen["start"] = (int(row[4]), int(row[3]))
+        scen["dimensions"] = (int(row[6]), int(row[5]))
         scen_list.append(scen)
     return scen_list
 
@@ -75,6 +77,7 @@ def draw_path_onto_map(map_name: str, scen_index: int, scen: dict, algorithm: st
         - start (tuple): lähdön x,y -koordinaatti
         - goal (tuple): maalin x,y -koordinaatti
         - shortest (int): lyhyin polku start ja goal välillä
+        - dimensions (tuple): kartan leveys ja korkeus pikseleissä
 
         visited (dict): sanakirja käsitellyistä solmuista. (x,y)-koordinaatti on avain ja arvona
     on tuple muodossa koordinaattiin kuljettu lyhyin matka ja viereinen koordinaatti mistä
@@ -83,7 +86,7 @@ def draw_path_onto_map(map_name: str, scen_index: int, scen: dict, algorithm: st
     visited = graph.visited
     try:
         im = Image.open(f"src/assets/images/{map_name}.png")
-        im = im.resize((512, 512), Image.Resampling.LANCZOS)
+        im = im.resize((scen["dimensions"][0], scen["dimensions"][1]), Image.Resampling.LANCZOS)
         pix = im.load()
         for node in visited:
             for _, n in graph.nodes[node].items():
