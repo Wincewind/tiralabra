@@ -3,6 +3,8 @@ Sain tällä viikolla kehitettyä ensimmäisen version JPS algoritmista. Määri
 
 Toisaalta, jos olen oikein ymmärtänyt, mitä enemmän esteitä verkossa, sitä enemmän hyppypisteitä algoritmi muodostaa. JPS näyttäisikin toimivan selkeästi parhaiten avoimissa kartoissa, missä Dijkstralla on enemmän käsiteltäviä solmuja.
 
+Lisäsin projektiin A* algoritmin, jotta JPS:iä voidaan vertailla myös tähän. Muokkasin hieman etäisyyksien laskentaa, joka nopeutti A* ja JPS:iä. JPS ja A* ovat selvästi Dijkstraa nopeampia näille otollisissa kartoissa, kuten kaupunkikartat, mutta JPS on lähes kaikilla reitellä A*:ia hitaampi.
+
 ## Tuntikirjanpito
 
 | Päivä | Käytetty aika | Kuvaus |
@@ -12,4 +14,6 @@ Toisaalta, jos olen oikein ymmärtänyt, mitä enemmän esteitä verkossa, sitä
 | 26.3.  | 2,25h | Kehitetty JPS algoritmille jump point solmujen haku ja kokoamis funktiot ja näille testit  |
 | 27.3.  | 5,75h | Kehitetty loppu toiminnallisuus JPS algoritmista, lisätty testejä ja algoritmin suoritus pääohjelmaan  |
 | 29.3.  | 1,5h | Päivitetty dokumentaatiota  |
-| Total  | 17h |  |
+| 2.4.  | 2h | Yritetty hienosäätää JPS algoritmia, kehitetty A* algoritmia  |
+| 3.4.  | 2h | Yritetty hienosäätää JPS algoritmia, kehitetty A* algoritmia ja päivitetty dokumentaatiota  |
+| Total  | 21h |  |
