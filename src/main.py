@@ -5,6 +5,7 @@ from ui.console_io import ConsoleIO
 import assets_io
 from graph import Graph
 from algorithms.dijkstra import dijkstra
+from algorithms.a_star import a_star
 from algorithms.jps import jps
 
 
@@ -22,7 +23,7 @@ def display_formed_img(map_name: str, scen_index: int, algorithm: str):
 
 
 def init_map_and_scens(map_name: str):
-    graph = Graph(assets_io.read_map(map_name),False)
+    graph = Graph(assets_io.read_map(map_name), False)
     scens = assets_io.read_scenarios(map_name)
     return graph, scens
 
@@ -30,17 +31,20 @@ def init_map_and_scens(map_name: str):
 def run_scenarios(io, map_name: str, scens_to_test: list, graph: Graph, scens: list):
     dijkstra_total = 0
     jps_total = 0
+    a_star_total = 0
     for i in scens_to_test:
-        for algorithm in [('dijkstra',dijkstra,dijkstra_total), ('jps',jps,jps_total)]:
+        scen = scens[i]
+        for algorithm in [("dijkstra", dijkstra), ("A_star", a_star), ("jps", jps)]:
             graph.reset_visited()
             graph.reset_pruned()
             io.write(f"Testataan skenaariota {i} algoritmilla {algorithm[0]}:")
-            scen = scens[i]
             start = time()
             algorithm[1](scen["start"], scen["goal"], graph)
             end = time()
-            if algorithm[0] == 'jps':
+            if algorithm[0] == "jps":
                 jps_total += end - start
+            elif algorithm[0] == "A_star":
+                a_star_total += end - start
             else:
                 dijkstra_total += end - start
 
@@ -49,7 +53,19 @@ def run_scenarios(io, map_name: str, scens_to_test: list, graph: Graph, scens: l
             )
             assets_io.draw_path_onto_map(map_name, i, scen, algorithm[0], graph)
             display_formed_img(map_name, i, algorithm[0])
-    return dijkstra_total, jps_total
+    return dijkstra_total, jps_total, a_star_total
+
+
+def write_totals(io, dijkstra_total, a_star_total, jps_total):
+    io.write(
+        f"Dijkstran algoritmilla kesti polunetsinnässä kokonaisuudessaan: {dijkstra_total} s."
+    )
+    io.write(
+        f"A* algoritmilla kesti polunetsinnässä kokonaisuudessaan: {a_star_total} s."
+    )
+    io.write(
+        f"JPS algoritmilla kesti polunetsinnässä kokonaisuudessaan: {jps_total} s."
+    )
 
 
 def main(io):
@@ -68,16 +84,13 @@ suorita 1-10 satunnaista skenaariota (2):"
         scens_to_test = [int(io.read(prompt, scen_idxs))]
     else:
         prompt = "Kuinka monta skenaariota suoritetaan (1-10)?"
-        n = io.read(prompt, [str(i) for i in range(1,11)])
+        n = io.read(prompt, [str(i) for i in range(1, 11)])
         scens_to_test = choices(range(len(scens)), k=int(n))
 
-    dijkstra_total, jps_total = run_scenarios(io, map_name, scens_to_test, graph, scens)
-    io.write(
-        f"Dijkstran algoritmilla kesti polunetsinnässä kokonaisuudessaan: {dijkstra_total} s."
+    dijkstra_total, jps_total, a_star_total = run_scenarios(
+        io, map_name, scens_to_test, graph, scens
     )
-    io.write(
-        f"JPS algoritmilla kesti polunetsinnässä kokonaisuudessaan: {jps_total} s."
-    )
+    write_totals(io, dijkstra_total, a_star_total, jps_total)
 
 
 if __name__ == "__main__":

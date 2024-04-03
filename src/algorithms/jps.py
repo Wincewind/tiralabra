@@ -11,37 +11,39 @@ def calculate_surrounding_directions(direction: int):
 
 def calculate_total_dist(current_node: tuple, target_node: tuple, dist_traveled=0):
     a, b = abs(current_node[0] - target_node[0]), abs(current_node[1] - target_node[1])
-    return dist_traveled + sqrt(a**2 + b**2)
+    return dist_traveled + sqrt(a * a + b * b)
 
 
-def _identify_successors(current_node: tuple, start: tuple, goal: tuple, graph: Graph):
+def _identify_successors(current_node: tuple, goal: tuple, graph: Graph):
     successors = []
     for neighbour in graph.nodes[current_node].items():
-        jump_point = _jump(current_node, neighbour[0], start, goal, graph)
-        if jump_point is not None:
+        jump_point = _jump(current_node, neighbour[0], goal, graph)
+        if jump_point[0] is not None:
             successors.append(jump_point)
     return successors
 
 
-def _jump(current_node: tuple, direction: int, start: tuple, goal: tuple, graph: Graph):
+def _jump(
+    current_node: tuple, direction: int, goal: tuple, graph: Graph, dist_to_node=0
+):
     node = None
     try:
         node = graph.nodes[current_node][direction]
     except KeyError:
-        return None
+        return None, 0
     if node.obstacle or node.pruned:
-        return None
+        return None, 0
     if node.coords == goal:
-        return node
+        return node, dist_to_node + node.dist
     if _prune(current_node, direction, graph):
-        return node
+        return node, dist_to_node + node.dist
 
-    surrounding_directions = calculate_surrounding_directions(direction)
     if direction % 2 != 0:
+        surrounding_directions = calculate_surrounding_directions(direction)
         for d in surrounding_directions:
-            if _jump(node.coords, d, start, goal, graph) is not None:
-                return node
-    return _jump(node.coords, direction, start, goal, graph)
+            if _jump(node.coords, d, goal, graph, dist_to_node + node.dist)[0] is not None:
+                return node, dist_to_node + node.dist
+    return _jump(node.coords, direction, goal, graph, dist_to_node + node.dist)
 
 
 def _prune(current_node: tuple, direction: int, graph: Graph):
@@ -83,6 +85,7 @@ def _prune(current_node: tuple, direction: int, graph: Graph):
             else:
                 directions_to_prune.remove(d)
                 forced_neighbour = True
+
     for d in directions_to_prune:
         if d in graph.nodes[node_to_check.coords]:
             graph.nodes[node_to_check.coords][d].pruned = True
@@ -90,7 +93,7 @@ def _prune(current_node: tuple, direction: int, graph: Graph):
 
 
 def _update_visited_and_queue(prev_node, distance, node, goal, graph, queue):
-    dist_to_jump_point = calculate_total_dist(prev_node, node.coords, distance)
+    dist_to_jump_point = distance
     cost = calculate_total_dist(node.coords, goal, dist_to_jump_point)
     if node.coords in graph.visited:
         if graph.visited[node.coords][0] > dist_to_jump_point:
@@ -116,6 +119,7 @@ def jps(start: tuple, goal: tuple, graph: Graph):
         _, distance, coords = heappop(queue)
         if goal == coords:
             break
-        successors = _identify_successors(coords, start, goal, graph)
-        for n in successors:
-            _update_visited_and_queue(coords, distance, n, goal, graph, queue)
+        successors = _identify_successors(coords, goal, graph)
+        for n, dist_to_n in successors:
+            dist_to_n += distance
+            _update_visited_and_queue(coords, dist_to_n, n, goal, graph, queue)

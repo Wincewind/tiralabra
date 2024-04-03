@@ -10,6 +10,7 @@ class Node:
             self.obstacle = False
         self.coords = coordinates
         self.pruned = False
+        self.dist = 1
 
 
 class Graph:
@@ -60,6 +61,26 @@ class Graph:
         Args:
              ascii_graph (list): kaksiulotteinen lista ascii merkkejä.
         """
+        def __generate_neighbours(node: Node):
+            """Alifunktio solmun naapureiden generoimiseen."""
+            for d, mod in self.DIRECTIONS.items():
+                neighbour_xy = (x + mod[0], y + mod[1])
+                if 0 <= neighbour_xy[0] < len(row) and 0 <= neighbour_xy[1] < len(
+                    ascii_graph
+                ):
+                    neighbour_node = Node(
+                        ascii_graph[neighbour_xy[1]][neighbour_xy[0]],
+                        neighbour_xy,
+                    )
+                    if d % 2 != 0:
+                        # Kuljettua matkaa täytetään vaaka tai pystysuunnassa
+                        # yhdellä ja diagonaalisessa suunnassa kahden neliöjuurella
+                        # 8 desimaalin tarkkuudella. Moving AI Labin skenaarioiden lyhyimmät
+                        # polut on annettu tällä tarkkuudella, joten tällä pyritään saamaan
+                        # mahdollisimman yhtenäisiä tuloksia.
+                        neighbour_node.dist = 1.41421356
+                    self.nodes[node.coords][d] = neighbour_node
+
         self.nodes = {}
         self.reset_visited()
 
@@ -69,17 +90,7 @@ class Graph:
                 if node.obstacle:
                     continue
                 self.nodes[node.coords] = {}
-                for d, mod in self.DIRECTIONS.items():
-                    neighbour_xy = (x + mod[0], y + mod[1])
-                    if 0 <= neighbour_xy[0] < len(row) and 0 <= neighbour_xy[1] < len(
-                        ascii_graph
-                    ):
-                        neighbour_node = Node(
-                            ascii_graph[neighbour_xy[1]][neighbour_xy[0]],
-                            neighbour_xy,
-                        )
-                        self.nodes[node.coords][d] = neighbour_node
-
+                __generate_neighbours(node)
                 self.__remove_illegal_diagonal_vertices(node.coords, remove_corner_cuts)
 
     def __remove_illegal_diagonal_vertices(self, coords: tuple, remove_corner_cuts: bool):
