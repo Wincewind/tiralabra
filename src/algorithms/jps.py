@@ -2,11 +2,14 @@ from math import sqrt
 from heapq import heappop, heappush
 from graph import Graph
 
-
-def calculate_surrounding_directions(direction: int):
-    prev_direction = 7 if direction - 1 == -1 else direction - 1
-    next_direction = 0 if direction == 7 else direction + 1
-    return prev_direction, next_direction
+SURROUNDING_DIRECTIONS = {0:(7,1),
+                          1:(0,2),
+                          2:(1,3),
+                          3:(2,4),
+                          4:(3,5),
+                          5:(4,6),
+                          6:(5,7),
+                          7:(6,0)}
 
 
 def calculate_total_dist(current_node: tuple, target_node: tuple, dist_traveled=0):
@@ -14,8 +17,24 @@ def calculate_total_dist(current_node: tuple, target_node: tuple, dist_traveled=
     return dist_traveled + sqrt(a * a + b * b)
 
 
-def _identify_successors(current_node: tuple, goal: tuple, graph: Graph):
+def _identify_successors(transition: tuple, goal: tuple, graph: Graph) -> list:
+    """Toteutus JPS:n julkaisun algoritmin 1 funktion pseudokoodista. Tarkoituksena on
+    ensin karsia nykyisestä solmusta naapurit yhtä kaarta aiemman solmun ja kuljettavan
+    suunnan perusteella. Tämän jälkeen jäljellä olevista naapureista lähdetään
+    etsimään seuraavaa hyppypistettä.
+
+    Args:
+        transition (tuple): yhtä kaarta aiempi solmu, kuljettu suunta ja nykyinen solmu.
+        goal (tuple): Maali solmu. Yksi mahdollisista hyppypisteistä.
+        graph (Graph): Verkko-olio.
+
+    Returns:
+        list: Löydetyt hyppypisteet.
+    """
     successors = []
+    prev_node, direction, current_node = transition
+    if prev_node is not None:
+        _prune(prev_node, direction, current_node, graph)
     for neighbour in graph.nodes[current_node].items():
         jump_point = _jump(current_node, neighbour[0], goal, graph)
         if jump_point[0] is not None:
@@ -25,101 +44,186 @@ def _identify_successors(current_node: tuple, goal: tuple, graph: Graph):
 
 def _jump(
     current_node: tuple, direction: int, goal: tuple, graph: Graph, dist_to_node=0
-):
+) -> tuple:
+    """Toteutus JPS:n julkaisun algoritmin 2 funktion pseudokoodista.
+    Rekursiivisessa funktiossa tarkistetaan solmuja edeten tiettyyn suuntaan,
+    kunnes löydetään hyppypiste.
+
+    Args:
+        current_node (tuple): Hyppypistettä edeltävä solmu.
+        direction (int): Suunta mistä ollaan tulossa.
+        goal (tuple): Maali-solmun x,y-koordinaatit, koska tämä on yksi mahdollinen hyppypiste.
+        graph (Graph): Verkko-olio
+        dist_to_node (int, optional): Tähän asti kuljettu matka aiemmasta
+        hyppypisteestä nykyiseen tarkasteltavaan solmuun. Oletusarvona 0.
+
+    Returns:
+        tuple(tuple,float,int): Hyppypistettä edeltävän solmun ja itse
+        hyppypisteen koordinaatit tuplena, kuljettu matka aiemman hyppypisteen
+        ja löydetyn välillä sekä hyppypisteen ja edeltävän solmun kaaren suunta.
+        Jos hyppypistettä ei löydy, palautetaan (None,0,-1).
+    """
     node = None
     try:
         node = graph.nodes[current_node][direction]
     except KeyError:
-        return None, 0
+        return None, 0, -1
     if node.obstacle or node.pruned:
-        return None, 0
+        return None, 0, -1
     if node.coords == goal:
-        return node, dist_to_node + node.dist
-    if _prune(current_node, direction, graph):
-        return node, dist_to_node + node.dist
+        return (current_node, node.coords), dist_to_node + node.dist, direction
+    if _check_for_forced_neighbours(
+        current_node, direction, node.coords, graph, [], True
+    ):
+        return (current_node, node.coords), dist_to_node + node.dist, direction
 
     if direction % 2 != 0:
-        surrounding_directions = calculate_surrounding_directions(direction)
-        for d in surrounding_directions:
-            if _jump(node.coords, d, goal, graph, dist_to_node + node.dist)[0] is not None:
-                return node, dist_to_node + node.dist
+        directions = SURROUNDING_DIRECTIONS[direction]
+        for d in directions:
+            if (
+                _jump(node.coords, d, goal, graph, dist_to_node + node.dist)[0]
+                is not None
+            ):
+                return (current_node, node.coords), dist_to_node + node.dist, direction
     return _jump(node.coords, direction, goal, graph, dist_to_node + node.dist)
 
 
-def _prune(current_node: tuple, direction: int, graph: Graph):
+def _check_for_forced_neighbours(
+    prev_node: tuple,
+    direction: int,
+    node_to_check: tuple,
+    graph: Graph,
+    directions_to_prune: list,
+    only_check_for_forced=False,
+):
+    """Jos tarkasteltavalla naapurilla ja current_nodella on esteitä yhteisinä naapureina,
+        tulee tiettyjen suuntien siirtymistä ns. "pakotettuja". Nämä tilanteet on nähtävissä
+        JPS julkaisun kuvista 2 a-d.
+
+    Args:
+        prev_node (tuple): Solmun x,y-koordinaatit, josta ollaan tultu nykyiseen solmuun.
+        direction (int): Suunta (0-7), mistä ollaan tultu.
+        node_to_check (tuple): Nykyisen solmun x,y-koordinaatit.
+        graph (Graph): Verkko-olio.
+        directions_to_prune (list): Karsittavat naapurien suunnat.
+        Jos suunnassa on pakotettu naapuri, se poistetaan listalta.
+        only_check_for_forced (bool, optional): True jos halutaan vaan tieto onko nykyisellä
+        solmulla pakotettuja naapureita. Oletusarvo on False.
+
+    Returns:
+        bool || directions_to_prune: Jos only_check_for_forced == True
+        ja halutaan tarkistaa vain pakotetut naapurit, palautetaan välittömästi
+        True jos löytyy pakotettu naapuri, muuten False.
+        Jos only_check_for_forced == False, palautetaan päivitetty directions_to_prune lista.
+    """
+    prev_neighbour, next_neighbour = SURROUNDING_DIRECTIONS[direction]
+    for d, get_prev_neighbour in ((prev_neighbour, True), (next_neighbour, False)):
+        if direction % 2 != 0:
+            if not only_check_for_forced:
+                directions_to_prune.remove(d)
+        if (
+            d in graph.nodes[prev_node]
+            and graph.nodes[prev_node][d].obstacle
+            and d in graph.nodes[node_to_check]
+            and not graph.nodes[node_to_check][d].obstacle
+            and graph.nodes[node_to_check][d].coords != prev_node
+        ):
+            if direction % 2 != 0:
+                prev_d, next_d = SURROUNDING_DIRECTIONS[d]
+                forced_d = prev_d if get_prev_neighbour else next_d
+                if only_check_for_forced:
+                    return True
+                directions_to_prune.remove(forced_d)
+            else:
+                if only_check_for_forced:
+                    return True
+                directions_to_prune.remove(d)
+    if only_check_for_forced:
+        return False
+    return directions_to_prune
+
+
+def _prune(prev_node: tuple, direction: int, node_to_check: tuple, graph: Graph):
     """Funktio karsimaan viereisen solmun naapurit, joista lähdetään etsimään current_nodelle
     hyppypistettä. Tarkempi kuvaus strategian teoriasta löytyy JPS alkuperäisen julkaisun
     sivuilta 1115-1116.
 
     Args:
-        current_node (tuple): Solmun koordinaatit, mistä siirrytty naapuriin.
+        prev_node (tuple): Solmun koordinaatit, mistä siirrytty naapuriin.
         direction (int): Suunta, mihin ollaan menossa.
+        node_to_check (tuple): Naapuri-solmu, jonka naapureita ollaan karsimassa.
         graph (Graph): Verkko-olio, jossa kummankin tarkasteltavista solmuista naapurien tiedot.
     """
-    forced_neighbour = False
-    node_to_check = graph.nodes[current_node][direction]
     directions_to_prune = list(range(8))
-    # Pituus current_nodesta samaan suuntaan kun ollaan jo menossa tulee
-    # aina olemaan pidempi, joten tätä ei karsita.
+    # Pituus prev_nodesta samaan suuntaan kun ollaan jo menossa tulee
+    # aina olemaan pidempi (jos ei kuljeta node_to_check kautta), joten tätä ei karsita.
     directions_to_prune.remove(direction)
-    prev_neighbour, next_neighbour = calculate_surrounding_directions(direction)
-    for d, mod in ((prev_neighbour, -1), (next_neighbour, 1)):
-        # Jos tarkasteltavalla naapurilla ja current_nodella on esteitä yhteisinä naapureina,
-        # tulee tiettyjen suuntien siirtymistä ns. "pakotettuja". Nämä tilanteet on nähtävissä
-        # JPS julkaisun kuvista 2 a-d.
-        if direction % 2 != 0:
-            directions_to_prune.remove(d)
-        if (
-            d in graph.nodes[current_node]
-            and graph.nodes[current_node][d].obstacle
-            and d in graph.nodes[node_to_check.coords]
-            and not graph.nodes[node_to_check.coords][d].obstacle
-            and graph.nodes[node_to_check.coords][d].coords != current_node
-        ):
-            if direction % 2 != 0:
-                forced_d = d + mod
-                forced_d = 7 if forced_d == -1 else forced_d
-                forced_d = 0 if forced_d == 8 else forced_d
-                directions_to_prune.remove(forced_d)
-                forced_neighbour = True
-            else:
-                directions_to_prune.remove(d)
-                forced_neighbour = True
-
+    directions_to_prune = _check_for_forced_neighbours(
+        prev_node, direction, node_to_check, graph, directions_to_prune
+    )
     for d in directions_to_prune:
-        if d in graph.nodes[node_to_check.coords]:
-            graph.nodes[node_to_check.coords][d].pruned = True
-    return forced_neighbour
+        if d in graph.nodes[node_to_check]:
+            graph.nodes[node_to_check][d].pruned = True
 
 
-def _update_visited_and_queue(prev_node, distance, node, goal, graph, queue):
-    dist_to_jump_point = distance
-    cost = calculate_total_dist(node.coords, goal, dist_to_jump_point)
-    if node.coords in graph.visited:
-        if graph.visited[node.coords][0] > dist_to_jump_point:
-            try:
-                prev_item = [
-                    item for item in enumerate(queue) if item[2] == node.coords
-                ]
-                queue.remove(prev_item)
-            except IndexError:
-                pass
-            heappush(queue, (cost, dist_to_jump_point, node.coords))
-            graph.visited[node.coords] = (dist_to_jump_point, prev_node)
-    else:
-        heappush(queue, (cost, dist_to_jump_point, node.coords))
-        graph.visited[node.coords] = (dist_to_jump_point, prev_node)
+def _update_visited_and_queue(
+    prev_jump_point: tuple,
+    prev_node_and_jp: tuple,
+    dist_to_jump_point: float,
+    direction: int,
+    goal: tuple,
+    graph: Graph,
+    queue: list,
+):
+    """Viedään löydettyjen hyppypisteiden tiedot jonoon ja Graph-olion visited-sanakirjaan.
+
+    Args:
+        prev_jump_point (tuple): Aiemman hyppypiste solmun x,y-koordinaatit. "Polku muodostuu
+        tämän ja seuraavan hyppypisteen välille.
+        prev_node_and_jp (tuple): Hyppypiste solmun ja sitä aiemman solmun x,y-koordinaatit.
+        prev_node tarvitaan kun hyppypisteestä seuraavia solmuja aletaan etsiä
+        ja sen naapurit karsitaan.
+        dist_to_jump_point (float): Etäisyys prev_jump_point ja nykyisen hyppypisteen välillä.
+        direction (int): Suunta, mistä nykyiseen hyppypisteeseen ollaan tulossa.
+        goal (tuple): Maalin x,y-koordinaatit. Käytetään laskemaan etäisyys
+        uuden hyppypisteen ja maalin välillä.
+        graph (Graph): Verkko-olio.
+        queue (list): Binäärikeko lista, johon seuraavan hyppypisteen tiedot lisätään muodossa
+        (kuljettu etäisyys hyppypisteeseen + suora etäisyys maaliin, kuljettu etäisyys
+        hyppypisteeseen, (hyppypistettä aiempi solmu, suunta hyppypisteeseen, hyppypiste)).
+    """
+    prev_node, node = prev_node_and_jp
+    cost = calculate_total_dist(node, goal, dist_to_jump_point)
+    heappush(queue, (cost, dist_to_jump_point, (prev_node, direction, node)))
+    graph.visited[node] = (dist_to_jump_point, prev_jump_point)
 
 
 def jps(start: tuple, goal: tuple, graph: Graph):
+    """Jump point search algoritmi, joka etsii lyhyintä
+    polkua start ja goal välillä graph verkossa.
+    Perustuu Harabor, D. ja Grastien, A (2011) julkaisuun aiheesta.
+
+    Args:
+        start (tuple): Lähdön x,y-koordinaatit.
+        goal (tuple): Maalin x,y-koordinaatit.
+        graph (Graph): Verkko-olio
+    """
     queue = []
-    queue.append((0, 0, start))
+    queue.append((0, 0, (None, -1, start)))
     graph.visited[start] = (0, start)
     while len(queue) > 0:
-        _, distance, coords = heappop(queue)
-        if goal == coords:
+        _, distance, transition = heappop(queue)
+        if goal == transition[2]:
             break
-        successors = _identify_successors(coords, goal, graph)
-        for n, dist_to_n in successors:
-            dist_to_n += distance
-            _update_visited_and_queue(coords, dist_to_n, n, goal, graph, queue)
+        successors = _identify_successors(transition, goal, graph)
+        for prev_node_and_jp, dist_to_jp, direction in successors:
+            dist_to_jp += distance
+            _update_visited_and_queue(
+                transition[2],
+                prev_node_and_jp,
+                dist_to_jp,
+                direction,
+                goal,
+                graph,
+                queue,
+            )
