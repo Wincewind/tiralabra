@@ -31,11 +31,11 @@ poetry run coverage run --branch -m pytest src
 ```
 ja tuloksista saadaan yleiskatsaus komentoriville komennolla:
 ```bash
-poetry run coverage html
+poetry run coverage report -m
 ```
 tai erillinen html-tiedosto:
 ```bash
-poetry run coverage report -m
+poetry run coverage html
 ```
 Raportti generoituu _htmlcov/_-hakemistoon.
 
