@@ -5,6 +5,13 @@ Toisaalta, jos olen oikein ymmärtänyt, mitä enemmän esteitä verkossa, sitä
 
 Lisäsin projektiin A* algoritmin, jotta JPS:iä voidaan vertailla myös tähän. Muokkasin hieman etäisyyksien laskentaa, joka nopeutti A* ja JPS:iä. JPS ja A* ovat selvästi Dijkstraa nopeampia näille otollisissa kartoissa, kuten kaupunkikartat, mutta JPS on lähes kaikilla reitellä A*:ia hitaampi.
 
+#### Päivitys 4.4.
+Sain viimein nopeutettua JPS:ää erottelemalla pakotettujen naapureiden tarkistuksen ja karsimisen, niin että karsimista tarvitsee suorittaa vain seuraavaa hyppypistettä tarkastellessa (kuten JPS julkaisun algoritmissa 1 on kuvattu). Nyt JPS:ltä menee puolet vähemmän aikaa polunetsintään ja se näyttäisi omassa kehitysympäristössäni häviävän Dijkstralle ja A*:lle ainoastaan todella tiheissä sokkeloissa.
+
+Ajattelin yrittää ensi viikolla lisätä pääohjelmaan mahdollisuuden ajaa sitä komentoriviargumenteilla, jolloin ajoja voi suorittaa ilman että syötteitä tarvitsee kirjoittaa joka kerta uudestaan. Tällä voisi vaikuttaa myös esim. ajetaanko skenaarioita kaikilla vai vaan 1-2 algoritmilla. Myös reitin piirtämisen deaktivointi voisi olla mahdollista.
+
+Tarkempien mittaustulosten takaamiseksi ajattelin myös, että algoritmit suoritetaan useampaan kertaan ja käytetään vertailussa näiden keskiarvoja.
+
 ## Tuntikirjanpito
 
 | Päivä | Käytetty aika | Kuvaus |
@@ -16,4 +23,5 @@ Lisäsin projektiin A* algoritmin, jotta JPS:iä voidaan vertailla myös tähän
 | 29.3.  | 1,5h | Päivitetty dokumentaatiota  |
 | 2.4.  | 2h | Yritetty hienosäätää JPS algoritmia, kehitetty A* algoritmia  |
 | 3.4.  | 2h | Yritetty hienosäätää JPS algoritmia, kehitetty A* algoritmia ja päivitetty dokumentaatiota  |
-| Total  | 21h |  |
+| 4.4.  | 3h | Refaktoroitu JPS algoritmia ja kommentoitu koodia  |
+| Total  | 24h |  |
