@@ -1,5 +1,6 @@
 import unittest
 from main import main
+from ui.commandline_arguments_parser import parser
 
 
 class StubIO:
@@ -13,21 +14,26 @@ class StubIO:
     def write(self, test_input):
         self.outputs.append(test_input)
 
+    def read_argument(self, argument: str, expected_values: list):
+        if argument not in expected_values:
+            return None
+        return argument
+
 
 class TestMain(unittest.TestCase):
 
     def test_running_main_program_for_one_scen(self):
         io = StubIO(["AR0413SR", "1", "777"])
-        main(io)
+        main(io,parser.parse_args(["-i"]))
         self.assertTrue(
             io.outputs[2].startswith(
-                "Skenaarion 777 ratkaisemisessa kului dijkstra algoritmilla:"
+                "Algoritmin dijkstra keskiarvo skenaarion 777 ratkaisemiseen oli:"
             )
         )
 
     def test_running_main_program_for_a_random_scen(self):
         io = StubIO(["AR0413SR", "2", "1"])
-        main(io)
+        main(io,parser.parse_args(["-i"]))
         print(io.outputs)
         self.assertTrue(
             io.outputs[-1].startswith(

@@ -49,7 +49,7 @@ class TestAssetsIO(unittest.TestCase):
 
     def test_get_available_maps(self):
         maps = assets_io.get_available_maps()
-        self.assertEqual(len(maps),2)
+        self.assertEqual(len(maps),3)
 
     def test_drawing_jps_found_path(self):
         graph = Graph(assets_io.read_map(self.map_name),False)
