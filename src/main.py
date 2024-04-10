@@ -24,8 +24,8 @@ def display_formed_img(map_name: str, scen_index: int, algorithm: str):
     plt.pause(10)
 
 
-def init_map_and_scens(map_name: str):
-    graph = Graph(assets_io.read_map(map_name), False)
+def init_map_and_scens(map_name: str, cl_args):
+    graph = Graph(assets_io.read_map(map_name), cl_args.no_corner_cuts)
     scens = assets_io.read_scenarios(map_name)
     return graph, scens
 
@@ -61,6 +61,11 @@ def run_scenarios(io, map_name: str, scens_to_test: list,
                 f"Algoritmin {algorithm[0]} keskiarvo skenaarion {i} \
 ratkaisemiseen oli: {run_mean} s."
             )
+            if cl_args.print_path_len:
+                io.write(
+                f"Skenaarion lyhyin polku on {scen['shortest']} ja \
+algoritmin löytämä polku oli {graph.visited[scen['goal']][0]}."
+            )
             if cl_args.images:
                 assets_io.draw_path_onto_map(map_name, i, scen, algorithm[0], graph)
                 display_formed_img(map_name, i, algorithm[0])
@@ -68,7 +73,7 @@ ratkaisemiseen oli: {run_mean} s."
 
 
 def write_totals(io, dijkstra_total, a_star_total, jps_total, algorithms):
-    if 'dijkststra' in algorithms:
+    if 'dijkstra' in algorithms:
         io.write(
             f"Dijkstran algoritmilla kesti polunetsinnässä kokonaisuudessaan: {dijkstra_total} s."
         )
@@ -125,7 +130,7 @@ def select_algorithms_to_test(cl_args):
 def main(io, cl_args):
     io.write("Tervetuloa polunetsintä algoritmien vertailu ohjelmaan!")
     map_name = check_commandline_argument_and_get_map_to_test(io, cl_args)
-    graph, scens = init_map_and_scens(map_name)
+    graph, scens = init_map_and_scens(map_name, cl_args)
     scens_to_test = check_commandline_argument_select_test_type_and_scens_to_test(
         io, cl_args, scens)
     algorithms = select_algorithms_to_test(cl_args)

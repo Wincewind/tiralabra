@@ -35,8 +35,8 @@ def _identify_successors(transition: tuple, goal: tuple, graph: Graph) -> list:
     prev_node, direction, current_node = transition
     if prev_node is not None:
         _prune(prev_node, direction, current_node, graph)
-    for neighbour in graph.nodes[current_node].items():
-        jump_point = _jump(current_node, neighbour[0], goal, graph)
+    for d, _ in graph.nodes[current_node].items():
+        jump_point = _jump(current_node, d, goal, graph)
         if jump_point[0] is not None:
             successors.append(jump_point)
     return successors
@@ -87,6 +87,23 @@ def _jump(
                 return (current_node, node.coords), dist_to_node + node.dist, direction
     return _jump(node.coords, direction, goal, graph, dist_to_node + node.dist)
 
+def _set_forced_neighbour_directions(direction: int, graph: Graph):
+    """Palauttaa annetun suunnan ympäröivät suunnat, joissa olevien
+    solmujen osalta päätellään, onko nykyinen solmu "pakoitettu naapuri".
+
+    Args:
+        direction (int): Suunta josta ollaan tultu
+        graph (Graph): Verkko-olio
+
+    Returns:
+        tuple: annettua suuntaa edeltävä ja seuraava suunta tai
+        jos kulmien leikkaus ei ole sallittua, edeltävää edeltävä ja seuraavaa seuraava suuunta.
+    """
+    prev_neighbour, next_neighbour = SURROUNDING_DIRECTIONS[direction]
+    if graph.no_corner_cuts and direction % 2 == 0:
+        prev_neighbour = SURROUNDING_DIRECTIONS[prev_neighbour][0]
+        next_neighbour = SURROUNDING_DIRECTIONS[next_neighbour][1]
+    return prev_neighbour, next_neighbour
 
 def _check_for_forced_neighbours(
     prev_node: tuple,
@@ -116,7 +133,7 @@ def _check_for_forced_neighbours(
         True jos löytyy pakotettu naapuri, muuten False.
         Jos only_check_for_forced == False, palautetaan päivitetty directions_to_prune lista.
     """
-    prev_neighbour, next_neighbour = SURROUNDING_DIRECTIONS[direction]
+    prev_neighbour, next_neighbour = _set_forced_neighbour_directions(direction, graph)
     for d, get_prev_neighbour in ((prev_neighbour, True), (next_neighbour, False)):
         if direction % 2 != 0:
             if not only_check_for_forced:
@@ -138,6 +155,10 @@ def _check_for_forced_neighbours(
                 if only_check_for_forced:
                     return True
                 directions_to_prune.remove(d)
+                if graph.no_corner_cuts and get_prev_neighbour:
+                    directions_to_prune.remove(SURROUNDING_DIRECTIONS[d][1])
+                elif graph.no_corner_cuts:
+                    directions_to_prune.remove(SURROUNDING_DIRECTIONS[d][0])
     if only_check_for_forced:
         return False
     return directions_to_prune
@@ -193,9 +214,10 @@ def _update_visited_and_queue(
         hyppypisteeseen, (hyppypistettä aiempi solmu, suunta hyppypisteeseen, hyppypiste)).
     """
     prev_node, node = prev_node_and_jp
-    cost = calculate_total_dist(node, goal, dist_to_jump_point)
-    heappush(queue, (cost, dist_to_jump_point, (prev_node, direction, node)))
-    graph.visited[node] = (dist_to_jump_point, prev_jump_point)
+    if node not in graph.visited or graph.visited[node][0] > dist_to_jump_point:
+        cost = calculate_total_dist(node, goal, dist_to_jump_point)
+        heappush(queue, (cost, dist_to_jump_point, (prev_node, direction, node)))
+        graph.visited[node] = (dist_to_jump_point, prev_jump_point)
 
 
 def jps(start: tuple, goal: tuple, graph: Graph):

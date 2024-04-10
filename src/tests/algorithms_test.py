@@ -179,6 +179,27 @@ class TestAlgorithms(unittest.TestCase):
         jump_point = jps._jump(start, 2, goal, self.graph)[0]
         self.assertEqual(jump_point[1], (5, 3))
 
+    def test_jps_find_straight_jump_point_with_no_corner_cuts(self):
+        start = (0, 3)
+        goal = (6, 2)
+        self.graph.generate_graph(self.test_graph_4_1, True)
+        jump_point = jps._jump(start, 2, goal, self.graph)[0]
+        self.assertEqual(jump_point[1], (1, 3))
+
+    def test_jps_find_straight_jump_point_with_no_corner_cuts_2(self):
+        start = (1, 3)
+        goal = (6, 2)
+        self.graph.generate_graph(self.test_graph_4_1, True)
+        jump_point = jps._jump(start, 2, goal, self.graph)[0]
+        self.assertEqual(jump_point[1], (6, 3))
+
+    def test_jps_find_diagonal_jump_point_with_no_corner_cuts(self):
+        start = (2, 3)
+        goal = (5, 0)
+        self.graph.generate_graph(self.test_graph_5, True)
+        jump_point = jps._jump(start, 1, goal, self.graph)[0]
+        self.assertEqual(jump_point[1], (4, 1))
+
     def test_jps_fail_to_find_straight_jump_point(self):
         start = (0, 3)
         goal = (5, 0)
@@ -205,6 +226,17 @@ class TestAlgorithms(unittest.TestCase):
         start = (0, 3)
         goal = (5, 0)
         self.graph.generate_graph(self.test_graph_5, False)
+        dijkstra(start, goal, self.graph)
+        dijkstra_path_len = self.graph.visited[goal][0]
+        self.graph.reset_visited()
+        jps.jps(start, goal, self.graph)
+        jps_path_len = self.graph.visited[goal][0]
+        self.assertAlmostEqual(dijkstra_path_len, jps_path_len)
+
+    def test_compare_dijkstra_and_jps_pathfinding_with_no_corner_cuts(self):
+        start = (0, 3)
+        goal = (5, 0)
+        self.graph.generate_graph(self.test_graph_5, True)
         dijkstra(start, goal, self.graph)
         dijkstra_path_len = self.graph.visited[goal][0]
         self.graph.reset_visited()

@@ -23,6 +23,9 @@ class Graph:
     - visited on sanakirja, missä (x,y)-koordinaatti on avain ja arvona
     on tuple muodossa koordinaattiin kuljettu lyhyin matka ja koordinaatti mistä
     avain-koordinaattiin on kuljettu.
+    - no_corner_cuts asetetaan joko True tai False generoidessa verkkoa ja siitä
+    jps algoritmi voi tarkistaa, mitä suuntia sen pitää tarkistaa määrittääkseen
+    "pakotettuja naapureita".
     """
 
     DIRECTIONS = {
@@ -39,6 +42,7 @@ class Graph:
     def __init__(self, ascii_graph: list = None, remove_corner_cuts=True) -> None:
         self.nodes = {(int, int): {int: Node}}
         self.visited = {(int, int): (int, (int, int))}
+        self.no_corner_cuts = False
         if ascii_graph is not None:
             self.generate_graph(ascii_graph, remove_corner_cuts)
 
@@ -83,6 +87,7 @@ class Graph:
 
         self.nodes = {}
         self.reset_visited()
+        self.no_corner_cuts = remove_corner_cuts
 
         for y, row in enumerate(ascii_graph):
             for x, col in enumerate(row):
