@@ -44,7 +44,7 @@ class TestAssetsIO(unittest.TestCase):
         dijkstra(scen['start'], scen['goal'], graph)
         file_idx = randint(0,1000000)
         assets_io.draw_path_onto_map(self.map_name,file_idx,scen,'dijkstra',graph)
-        file_formed = os.path.isfile(f'src/output/{self.map_name}_{file_idx}_dijkstra.png')
+        file_formed = os.path.isfile(f'output/{self.map_name}_{file_idx}_dijkstra.png')
         self.assertEqual(file_formed,True)
 
     def test_get_available_maps(self):
@@ -57,5 +57,5 @@ class TestAssetsIO(unittest.TestCase):
         jps(scen['start'], scen['goal'], graph)
         file_idx = randint(0,1000000)
         assets_io.draw_path_onto_map(self.map_name,file_idx,scen,'jps',graph)
-        file_formed = os.path.isfile(f'src/output/{self.map_name}_{file_idx}_jps.png')
+        file_formed = os.path.isfile(f'output/{self.map_name}_{file_idx}_jps.png')
         self.assertEqual(file_formed,True)

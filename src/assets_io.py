@@ -65,9 +65,67 @@ def read_scenarios(map_name: str) -> list:
     return scen_list
 
 
+def create_diagonal_path(start: tuple, end: tuple, path: set) -> set:
+    """
+    Lasketaan diagonaaliset xy-koordinaatit kahden solmun väliltä."""
+    x1, y1 = start
+    x2, y2 = end
+    if x1 < x2 and y1 > y2:
+        mod = (1,-1)
+    elif x1 < x2 and y1 < y2:
+        mod = (1,1)
+    elif x1 > x2 and y1 < y2:
+        mod = (-1,1)
+    else:
+        mod = (-1,-1)
+    while (x1,y1) != end:
+        x1, y1 = x1+mod[0], y1 + mod[1]
+        path.add((x1,y1))
+    return path
+
+
+def get_path_between_two_nodes(start: tuple, end: tuple, algorithm: str, visited: dict) -> set:
+    """Muodostaa ja palauttaa joukon solmuja kahden pisteen väliltä. Riippuen algoritmista, 
+    polun määritys myös eroaa.
+
+    Args:
+        start (tuple): alkusolmu
+        end (tuple): loppusolmu
+        algorithm (str): Joko 'dijkstra', 'A_star' tai 'jps'.
+        visited (dict): Sanakirja solmuja ja arvona tuple: (etäisyys, solmu mistä ollaan saavuttu)
+
+    Returns:
+        set: Joukko polun solmuja start ja end välillä.
+    """
+    path = {end}
+    path_node = end
+    if algorithm != "jps":
+        while path_node != start:
+            _, path_node = visited[path_node]
+            path.add(path_node)
+    else:
+        while path_node != start:
+            x1, y1 = path_node
+            _, path_node = visited[path_node]
+            x2, y2 = path_node
+            # Solmut samalla rivillä
+            if x1 == x2:
+                for i in range(abs(y1-y2)):
+                    path.add((x1,min(y1,y2)+i))
+            # Solmut samassa sarakkeessa
+            elif y1 == y2:
+                for i in range(abs(x1-x2)):
+                    path.add((min(x1,x2)+i,y1))
+            # Solmujen väli on diagonaalinen
+            else:
+                path = create_diagonal_path((x1,y1),(x2,y2),path)
+            path.add(path_node)
+    return path
+
+
 def draw_path_onto_map(map_name: str, scen_index: int, scen: dict, algorithm: str, graph: Graph):
     """Piirtää karttaa edustavaan kuvaan löydetyn polun ja käsitellyt solmut.
-    Muokattu kuva tallennetaan /src/output/ -kansioon
+    Muokattu kuva tallennetaan output/ -kansioon
 
     Args:
         map_name (str): Tiedoston nimi ilman .png päätettä.
@@ -94,13 +152,12 @@ def draw_path_onto_map(map_name: str, scen_index: int, scen: dict, algorithm: st
                     pix[n.coords] = (128,128,128)  # Karsitut solmut väri: (Harmaa)
             pix[node] = (0, 255, 255)  # Solmut missä käyty väri: (Cyan)
 
-        _, path_node = visited[scen["goal"]]
-        while path_node != scen["start"]:
-            pix[path_node] = (255, 0, 255)  # Polku väri: (Magenta)
-            _, path_node = visited[path_node]
+        path = get_path_between_two_nodes(scen["start"], scen["goal"], algorithm, visited)
+        for node in path:
+            pix[node] = (255, 0, 255)  # Polku väri: (Magenta)
         pix[scen["start"]] = (0, 255, 0)  # Alku väri: Vihreä
         pix[scen["goal"]] = (255, 0, 0)  # Maali väri: Punainen
-        im.save(f"src/output/{map_name}_{str(scen_index)}_{algorithm}.png", "PNG")
+        im.save(f"output/{map_name}_{str(scen_index)}_{algorithm}.png", "PNG")
     except FileNotFoundError as ex:
         print(f"'{map_name}', {ex.strerror}")
 

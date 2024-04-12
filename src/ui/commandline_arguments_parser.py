@@ -29,7 +29,7 @@ parser.add_argument(
     type=int,
     dest="scenario",
     nargs="+",
-    default=-1,
+    default=None,
 )
 parser.add_argument(
     "-c",

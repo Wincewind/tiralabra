@@ -19,7 +19,7 @@ def list_map_names(maps: list):
 
 
 def display_formed_img(map_name: str, scen_index: int, algorithm: str):
-    img = plt.imread(f"src/output/{map_name}_{scen_index}_{algorithm}.png")
+    img = plt.imread(f"output/{map_name}_{scen_index}_{algorithm}.png")
     plt.imshow(img)
     plt.pause(10)
 
@@ -105,8 +105,8 @@ suorita 1-10 satunnaista skenaariota (2):"
         choice = str(cl_args.test_type)
     scens_to_test = cl_args.scenario
     scen_idxs = [str(i) for i in range(len(scens))]
-    if choice == "1" and (scens_to_test == -1 or
-                          not all(scen for scen in scens_to_test if str(scen) not in scen_idxs)):
+    if choice == "1" and (scens_to_test is None or
+                          not all(str(scen) in scen_idxs for scen in scens_to_test)):
         prompt = f"Valitse skenaarion indeksi välillä 0-{len(scens)-1}:"
         scens_to_test = [int(io.read(prompt, scen_idxs))]
     elif choice == "1" and all(scen for scen in scens_to_test if str(scen) not in scen_idxs):
