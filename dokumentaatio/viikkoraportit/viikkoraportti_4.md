@@ -3,4 +3,5 @@
 | 9.4.  | 3,25h | Lisätty komentorivi-argumentteja pääohjelmaan ja vaihdettu algoritmien mittaus tapahtuvan niiden keskiarvojen perusteella, yhden ajon sijaan |
 | 10.4.  | 3,25h | Lisätty lisää komentorivi-argumentteja ja päivitetty jps algoritmi toimimaan ilman kulmien leikkausta |
 | 12.4.  | 2,5h | Lisätty koko polun piirtäminen jps:lle ja päivitetty dokumentaatiota |
-| Total  | 9h |  |
+| 13.4.  | 2,75h | Lisätty dokumentaatiota |
+| Total  | 11,75h |  |
