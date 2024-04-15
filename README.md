@@ -64,7 +64,7 @@ options:
   -m {AR0413SR,London_1_512,maze512-16-0}, --map {AR0413SR,London_1_512,maze512-16-0}
                         Kartan nimi, jolle testit ajetaan.
   -t {1,2}, --test {1,2}
-                        Testin tyyppi, 1: ajetaan vain yksi skenaario, 2: ajetaan x määrä satunnaisia skenaarioita
+                        Testin tyyppi, 1: ajetaan vain tietty(jä) skenaario(ita), 2: ajetaan x määrä satunnaisia skenaarioita
   -s SCENARIO [SCENARIO ...], --scenarios SCENARIO [SCENARIO ...]
                         Ajettavien skenaarioiden indeksit, jos test_type=1. Huom. eri kartoilla on eri määrä ajettavia
                         skenaarioita
