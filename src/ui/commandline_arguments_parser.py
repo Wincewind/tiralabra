@@ -14,7 +14,7 @@ parser.add_argument(
 parser.add_argument(
     "-t",
     "--test",
-    help="Testin tyyppi, 1: ajetaan vain yksi skenaario, \
+    help="Testin tyyppi, 1: ajetaan vain tietty(jä) skenaario(ita), \
                     2: ajetaan x määrä satunnaisia skenaarioita",
     type=int,
     choices=[1, 2],
