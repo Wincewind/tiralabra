@@ -243,7 +243,7 @@ def create_gif(gifgen: GifGenerator, nodes: dict, visited: dict):
         )
     )
     gifgen.images[0].save(
-        f"output/{gifgen.map_name}_{str(gifgen.scen["index"])}_{gifgen.algorithm}.gif",
+        f"output/{gifgen.map_name}_{str(gifgen.scen['index'])}_{gifgen.algorithm}.gif",
         save_all=True,
         append_images=gifgen.images[1:],
         optimize=False,
