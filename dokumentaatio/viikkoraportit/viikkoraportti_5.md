@@ -1,6 +1,6 @@
 # Viikkoraportti, viikko 5
 
-Testasin vieruslistojen vaihtamista listoiksi sanakirjojen sijaan ja tämä näytti nopeuttavan algoritmeja n. 30 %. Koska tämä ei näyttänyt varsinaisesti kasvattavan eroa eri algoritmien nopeuksien välillä, en taida toteuttaa muutosta koska se vaatisi myös mittavia testien päivityksiä.
+Testasin vieruslistojen vaihtamista listoiksi sanakirjojen sijaan ja tämä näytti nopeuttavan algoritmeja n. 30 %. Koska tämä ei näyttänyt varsinaisesti kasvattavan eroa eri algoritmien nopeuksien välillä ja muutos vaatisi myös mittavia testien päivityksiä, en taida toteuttaa muutosta.
 
 | Päivä | Käytetty aika | Kuvaus |
 | ----- | ------------- | ------ |
