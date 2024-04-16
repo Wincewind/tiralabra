@@ -1,5 +1,5 @@
 from math import sqrt
-from heapq import heappop, heappush
+from heapq import heappush
 from graph import Graph
 
 SURROUNDING_DIRECTIONS = {0:(7,1),
@@ -230,11 +230,10 @@ def jps(start: tuple, goal: tuple, graph: Graph):
         goal (tuple): Maalin x,y-koordinaatit.
         graph (Graph): Verkko-olio
     """
-    queue = []
-    queue.append((0, 0, (None, -1, start)))
+    graph.queue.append((0, 0, (None, -1, start)))
     graph.visited[start] = (0, start)
-    while len(queue) > 0:
-        _, distance, transition = heappop(queue)
+    while len(graph.queue) > 0:
+        _, distance, transition = graph.queue_pop()
         if goal == transition[2]:
             break
         successors = _identify_successors(transition, goal, graph)
@@ -247,5 +246,5 @@ def jps(start: tuple, goal: tuple, graph: Graph):
                 direction,
                 goal,
                 graph,
-                queue,
+                graph.queue,
             )

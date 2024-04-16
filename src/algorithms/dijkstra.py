@@ -1,4 +1,4 @@
-from heapq import heappush, heappop
+from heapq import heappush
 from graph import Graph, Node  # noqa # pylint: disable=unused-import
 # Node importataan tässä, jotta sen itellisense:iin päästään koodissa käsiksi.
 
@@ -9,11 +9,10 @@ def dijkstra(start: tuple, goal: tuple, graph: Graph):
     Argumentteina annetaan lähtö ja maali x,y -koordinaatit ja Graph-olio.
     Löydetty reitti täytetään Graph-olion visited attribuuttiin.
     """
-    queue = []
-    heappush(queue, (0, start))
+    heappush(graph.queue, (0, start))
     graph.visited[start] = (0, start)
-    while len(queue) > 0:
-        distance, coords = heappop(queue)
+    while len(graph.queue) > 0:
+        distance, coords = graph.queue_pop()
         if goal == coords:
             break
         for _, neighbour  in graph.nodes[coords].items():
@@ -24,4 +23,4 @@ def dijkstra(start: tuple, goal: tuple, graph: Graph):
             ):
                 continue
             graph.visited[neighbour.coords] = (to_neighbour, coords)
-            heappush(queue, (to_neighbour, neighbour.coords))
+            heappush(graph.queue, (to_neighbour, neighbour.coords))

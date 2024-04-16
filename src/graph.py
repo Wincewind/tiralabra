@@ -1,3 +1,7 @@
+from heapq import heappop
+from assets_io import GifGenerator
+
+
 class Node:
     """Solmu-luokka.
     Obstacle on True jos kyseessä on este ja False kun solmuun voidaan kulkea.
@@ -39,10 +43,17 @@ class Graph:
         7: (-1, -1),
     }
 
-    def __init__(self, ascii_graph: list = None, remove_corner_cuts=True) -> None:
+    def __init__(
+        self,
+        ascii_graph: list = None,
+        remove_corner_cuts=True,
+        gifgen: GifGenerator = None,
+    ) -> None:
         self.nodes = {(int, int): {int: Node}}
         self.visited = {(int, int): (int, (int, int))}
         self.no_corner_cuts = False
+        self.queue = []
+        self.gifgen = gifgen
         if ascii_graph is not None:
             self.generate_graph(ascii_graph, remove_corner_cuts)
 
@@ -50,10 +61,11 @@ class Graph:
         """Apufunktio polunetsintä tulosten tyhjentämiseen,
         ilman että tarvitsee ladata uutta karttatietoa.
         """
+        self.queue = []
         self.visited = {}
 
     def reset_pruned(self):
-        for _,neighbours in self.nodes.items():
+        for _, neighbours in self.nodes.items():
             for _, n in neighbours.items():
                 n.pruned = False
 
@@ -65,6 +77,7 @@ class Graph:
         Args:
              ascii_graph (list): kaksiulotteinen lista ascii merkkejä.
         """
+
         def __generate_neighbours(node: Node):
             """Alifunktio solmun naapureiden generoimiseen."""
             for d, mod in self.DIRECTIONS.items():
@@ -98,17 +111,22 @@ class Graph:
                 __generate_neighbours(node)
                 self.__remove_illegal_diagonal_vertices(node.coords, remove_corner_cuts)
 
-    def __remove_illegal_diagonal_vertices(self, coords: tuple, remove_corner_cuts: bool):
+    def __remove_illegal_diagonal_vertices(
+        self, coords: tuple, remove_corner_cuts: bool
+    ):
         """Muodostetuista kaarista poistetaan ne, jotka kulkevat kahden esteen välistä tai
         leikkaavat esteen kulmaa, jos remove_corner_cuts on True.
 
         Args:
-            coords (tuple): Solmun koordinaatit, jonka naapureita tarkastellaan. 
+            coords (tuple): Solmun koordinaatit, jonka naapureita tarkastellaan.
             remove_corner_cuts (bool): Jos remove_corner_cuts on True,
             poistetaan diagonaaliset kaaret, jotka leikaavat esteen kulmaa.
         """
         for direction in range(1, 8, 2):
-            if direction not in self.nodes[coords] or self.nodes[coords][direction].obstacle:
+            if (
+                direction not in self.nodes[coords]
+                or self.nodes[coords][direction].obstacle
+            ):
                 continue
             prev_neighbour = direction - 1
             next_neighbour = 0 if direction == 7 else direction + 1
@@ -133,3 +151,9 @@ class Graph:
                     and self.nodes[coords][next_neighbour].obstacle
                 ):
                     del self.nodes[coords][direction]
+
+    def queue_pop(self):
+        next_item = heappop(self.queue)
+        if self.gifgen is not None and self.gifgen.generate_gif:
+            self.gifgen.generate_new_image(next_item, self.nodes, self.visited)
+        return next_item

@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 import re
 from PIL import Image
-from graph import Graph
 
 
 def __reader(file_path: str) -> list:
@@ -122,8 +121,18 @@ def get_path_between_two_nodes(start: tuple, end: tuple, algorithm: str, visited
             path.add(path_node)
     return path
 
+def form_base_img(map_name: str, dimensions: tuple):
+    try:
+        im = Image.open(f"src/assets/images/{map_name}.png")
+        return im.resize(dimensions, Image.Resampling.LANCZOS)
+    except FileNotFoundError as ex:
+        print(f"'{map_name}', {ex.strerror}")
+        return None
 
-def draw_path_onto_map(map_name: str, scen_index: int, scen: dict, algorithm: str, graph: Graph):
+def save_created_image(map_name: str, scen_index: int, algorithm: str, im: Image):
+    im.save(f"output/{map_name}_{str(scen_index)}_{algorithm}.png", "PNG")
+
+def draw_path_onto_map(start_and_end: tuple, algorithm: str, nodes: dict, visited: dict, im):
     """Piirtää karttaa edustavaan kuvaan löydetyn polun ja käsitellyt solmut.
     Muokattu kuva tallennetaan output/ -kansioon
 
@@ -141,25 +150,40 @@ def draw_path_onto_map(map_name: str, scen_index: int, scen: dict, algorithm: st
     on tuple muodossa koordinaattiin kuljettu lyhyin matka ja viereinen koordinaatti mistä
     avain-koordinaattiin on kuljettu.
     """
-    visited = graph.visited
-    try:
-        im = Image.open(f"src/assets/images/{map_name}.png")
-        im = im.resize((scen["dimensions"][0], scen["dimensions"][1]), Image.Resampling.LANCZOS)
-        pix = im.load()
-        for node in visited:
-            for _, n in graph.nodes[node].items():
-                if not n.obstacle and n.pruned:
-                    pix[n.coords] = (128,128,128)  # Karsitut solmut väri: (Harmaa)
-            pix[node] = (0, 255, 255)  # Solmut missä käyty väri: (Cyan)
+    pix = im.load()
+    for node in visited:
+        for _, n in nodes[node].items():
+            if not n.obstacle and n.pruned:
+                pix[n.coords] = (128,128,128)  # Karsitut solmut väri: (Harmaa)
+        pix[node] = (0, 255, 255)  # Solmut missä käyty väri: (Cyan)
 
-        path = get_path_between_two_nodes(scen["start"], scen["goal"], algorithm, visited)
-        for node in path:
-            pix[node] = (255, 0, 255)  # Polku väri: (Magenta)
-        pix[scen["start"]] = (0, 255, 0)  # Alku väri: Vihreä
-        pix[scen["goal"]] = (255, 0, 0)  # Maali väri: Punainen
-        im.save(f"output/{map_name}_{str(scen_index)}_{algorithm}.png", "PNG")
-    except FileNotFoundError as ex:
-        print(f"'{map_name}', {ex.strerror}")
+    path = get_path_between_two_nodes(start_and_end[0], start_and_end[1], algorithm, visited)
+    for node in path:
+        pix[node] = (255, 0, 255)  # Polku väri: (Magenta)
+    pix[start_and_end[0]] = (0, 255, 0)  # Alku väri: Vihreä
+    pix[start_and_end[1]] = (255, 0, 0)  # Maali väri: Punainen
+    return im
+
+
+def draw_and_save_found_pathfinding(
+    map_name: str,
+    scen: dict,
+    algorithm: str,
+    nodes: dict,
+    visited: dict,
+):
+    save_created_image(
+        map_name,
+        scen["index"],
+        algorithm,
+        draw_path_onto_map(
+            (scen["start"], scen["goal"]),
+            algorithm,
+            nodes,
+            visited,
+            form_base_img(map_name, (scen["dimensions"][0], scen["dimensions"][1])),
+        ),
+    )
 
 
 def get_available_maps():
@@ -170,3 +194,58 @@ def get_available_maps():
         list: Lista tiedostojen nimiä, ilman tiedostopäätettä.
     """
     return [Path(filename).stem for filename in os.listdir("src/assets/images/")]
+
+
+class GifGenerator:
+    def __init__(self, map_name: str, dimensions:tuple, generate_gif: bool=False) -> None:
+        self.generate_gif = generate_gif
+        self.map_name = map_name
+        self.scen = None
+        self.algorithm = "dijkstra"
+        self.base_img = form_base_img(map_name, dimensions)
+        self.images = []
+        self._round_counter = 0
+
+    def set_run_parameters(self, scen:dict, algorithm: str):
+        self.images = []
+        self._round_counter = 0
+        self.scen = scen
+        self.algorithm = algorithm
+
+    def generate_new_image(self, next_queue_item, nodes, visited):
+        self._round_counter += 1
+        if self.algorithm == "jps":
+            end = next_queue_item[-1][-1]
+        else:
+            end = next_queue_item[-1]
+        if (self.algorithm == "jps" and self._round_counter == 5) or \
+            self._round_counter > self.scen["shortest"] / 2:
+            self.images.append(
+                draw_path_onto_map(
+                    (self.scen["start"], end),
+                    self.algorithm,
+                    nodes,
+                    visited,
+                    self.base_img.copy(),
+                )
+            )
+            self._round_counter = 0
+
+
+def create_gif(gifgen: GifGenerator, nodes: dict, visited: dict):
+    gifgen.images.append(
+        draw_path_onto_map(
+            (gifgen.scen["start"], gifgen.scen["goal"]),
+            gifgen.algorithm,
+            nodes,
+            visited,
+            gifgen.base_img.copy(),
+        )
+    )
+    gifgen.images[0].save(
+        f"output/{gifgen.map_name}_{str(gifgen.scen["index"])}_{gifgen.algorithm}.gif",
+        save_all=True,
+        append_images=gifgen.images[1:],
+        optimize=False,
+        duration=100,
+    )

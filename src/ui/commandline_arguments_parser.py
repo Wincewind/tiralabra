@@ -74,3 +74,12 @@ parser.add_argument(
     default=True,
     action="store_false",
 )
+
+parser.add_argument(
+    "-g",
+    "--gif",
+    help="Muodosta polunetsinnästä gif-animaatio.",
+    dest="gif",
+    default=False,
+    action="store_true",
+)
