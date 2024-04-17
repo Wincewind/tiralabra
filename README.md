@@ -12,12 +12,19 @@
 - [Viikkoraportti 2](dokumentaatio/viikkoraportit/viikkoraportti_2.md)
 - [Viikkoraportti 3](dokumentaatio/viikkoraportit/viikkoraportti_3.md)
 - [Viikkoraportti 4](dokumentaatio/viikkoraportit/viikkoraportti_4.md)
+- [Viikkoraportti 5](dokumentaatio/viikkoraportit/viikkoraportti_5.md)
 
 ## Asennus
-1. Kun repo on kloonattu haluamaasi hakemistoon, siirry projektin juurihakemistoon ja asenna riippuvuudet komennolla:
+Kun repo on kloonattu haluamaasi hakemistoon, siirry projektin juurihakemistoon ja asenna riippuvuudet komennolla:
 ```bash
 poetry install
 ```
+Virtuaaliympäristön voi aktivoida komennolla:
+```bash
+poetry shell
+```
+mutta komennot suoritetaan myös virtuaaliympäristössä kun ne aloitetaan _poetry run_:lla.
+
 ## Komentorivitoiminnot
 
 ### Testaus
@@ -45,14 +52,14 @@ Raportti generoituu _htmlcov/_-hakemistoon.
 Pääohjelman käynnistys tapahtuu suorittamalla komento:
 
 ```bash
-poetry run python src\main.py
+poetry run python src/main.py
 ```
 Jos ohjelma halutaan keskeyttää ennenaikaisesti, tapahtuu tämä syöttämällä komentokehotteeseen näppäinyhdistelmä _CTRL+C_ .
 
 ### Pääohjelman käynnistäminen komentorivi-argumenteilla
 Pääohjelman voi käynnistää myös käyttäen komentorivi-argumentteja. Näillä säätämällä voi testausta kustomoida itsellensä sopivaksi ja saatavilla on myös enemmän optioita. Suoritusaikojen keskiarvojen lisäksi, voidaan myös esim. tulostaa odotettu ja löydetty polun pituus, ajaa vain tiettyjä algoritmeja tai ottaa pois käytöstä reitin piirtämisen ja kuvan tuottamisen. Kun halutaan suorittaa jokin testiajo uudestaan on näiden käytöstä erityisesti hyötyä. Suorittamalla komennon:
 ```bash
-poetry run python src\main.py -h
+poetry run python src/main.py -h
 ```
 Pitäisi näkyä seuraavat ohjeet:
 ```bash
@@ -80,13 +87,13 @@ options:
 
 Komentorivi-argumentteja voi käyttää esim. seuraavasti:
 ```bash
-poetry run python src\main.py -m London_1_512 -t 1 -s 100 200 300 -p
+poetry run python src/main.py -m London_1_512 -t 1 -s 100 200 300 -p
 ```
 jonka seurauksena ajetaan kartalla London_1_512 skenaariot 100, 200 ja 300 niin että ajanmittauksen lisäksi tulostetaan skenaariolle algoritmin löytämän polun pituus.
 
 Komennolla:
 ```bash
-poetry run python src\main.py -m maze512-16-0 -t 2 -c 20 -a A_star jps -i
+poetry run python src/main.py -m maze512-16-0 -t 2 -c 20 -a A_star jps -i
 ```
 suoritetaan kartalla maze512-16-0 polunetsintä ainoastaan A* ja JPS algoritmeilla 20:ssä satunnaisessa skenaariossa. Kuvia löydetystä polusta ei muodosteta. **Huom!** tämän suorittamisessa saattaa kestää hetki.
 
