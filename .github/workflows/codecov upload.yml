@@ -18,10 +18,12 @@ jobs:
         run: poetry install
       - name: Run tests
         run: poetry run coverage run --branch -m pytest
+      - name: Coverage report
+        run: poetry run coverage xml
       - name: Upload coverage reports to Codecov
         run: |
           # Replace `linux` below with the appropriate OS
           # Options are `alpine`, `linux`, `macos`, `windows`
           curl -Os https://uploader.codecov.io/latest/linux/codecov
           chmod +x codecov
-          ./codecov -t ${CODECOV_TOKEN}
+          ./codecov -t ${secrets.CODECOV_TOKEN}
