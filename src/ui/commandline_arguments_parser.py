@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-from assets_io import get_available_maps
+from services.assets_service import get_available_maps
 
 parser = ArgumentParser()
 parser.add_argument(

@@ -1,67 +1,72 @@
-import os
-from pathlib import Path
-import re
+import matplotlib.pyplot as plt
 from PIL import Image
 
 
-def __reader(file_path: str) -> list:
-    """Apufunktio map ja scen tiedostojen lukemiseen.
+class GifGenerator:
+    def __init__(self, map_name: str, dimensions:tuple, generate_gif: bool=False) -> None:
+        self.generate_gif = generate_gif
+        self.map_name = map_name
+        self.scen = None
+        self.algorithm = "dijkstra"
+        self.base_img = form_base_img(map_name, dimensions)
+        self.images = []
+        self._round_counter = 0
 
-    Args:
-        file_path (str): polku luettavaan tiedostoon.
+    def set_run_parameters(self, scen:dict, algorithm: str):
+        self.images = []
+        self._round_counter = 0
+        self.scen = scen
+        self.algorithm = algorithm
 
-    Returns:
-        list: lista tiedoston riveistä.
-    """
-    data = []
-    try:
-        with open(file_path, encoding="ascii") as file:
-            return file.read().splitlines()
-    except FileNotFoundError as ex:
-        print(f"'{file_path}', {ex.strerror}")
-    return data
-
-
-def read_map(map_name: str) -> list:
-    """Lukee ASCII map-tiedoston sisältö.
-
-    Args:
-        map_name (str): Tiedoston nimi ilman .map päätettä.
-
-    Returns:
-        list: Kaksiulotteinen lista ascii-merkkejä.
-    """
-    ascii_graph = []
-    data = __reader(f"src/assets/maps/{map_name}.map")
-    for row in data[4:]:
-        ascii_graph.append(list(row))
-    return ascii_graph
+    def generate_new_image(self, next_queue_item, nodes, visited):
+        self._round_counter += 1
+        if self.algorithm == "jps":
+            end = next_queue_item[-1][-1]
+        else:
+            end = next_queue_item[-1]
+        if (self.algorithm == "jps" and self._round_counter == 5) or \
+            self._round_counter > self.scen["shortest"] / 2:
+            self.images.append(
+                draw_path_onto_map(
+                    (self.scen["start"], end),
+                    self.algorithm,
+                    nodes,
+                    visited,
+                    self.base_img.copy(),
+                )
+            )
+            self._round_counter = 0
 
 
-def read_scenarios(map_name: str) -> list:
-    """Lukee scen-tiedoston skenaariot map tiedostolle.
+def create_gif(gifgen: GifGenerator, nodes: dict, visited: dict):
+    gifgen.images.append(
+        draw_path_onto_map(
+            (gifgen.scen["start"], gifgen.scen["goal"]),
+            gifgen.algorithm,
+            nodes,
+            visited,
+            gifgen.base_img.copy(),
+        )
+    )
+    gifgen.images[0].save(
+        f"output/{gifgen.map_name}_{str(gifgen.scen['index'])}_{gifgen.algorithm}.gif",
+        save_all=True,
+        append_images=gifgen.images[1:],
+        optimize=False,
+        duration=100,
+    )
 
-    Args:
-        map_name (str): Tiedoston nimi ilman .map.scen päätettä.
 
-    Returns:
-        list[dict]: Lista sanakirjoja skenaarioista. Nämä koostuvat:
-        - start (tuple): lähdön x,y -koordinaatti
-        - goal (tuple): maalin x,y -koordinaatti
-        - shortest (int): lyhyin polku start ja goal välillä
-        - dimensions (tuple): kartan leveys ja korkeus pikseleissä
-    """
-    scen_list = []
-    data = __reader(f"src/assets/scens/{map_name}.map.scen")
-    for row in data[1:]:
-        scen = {}
-        row = re.split(r"\s+", row)[::-1]
-        scen["shortest"] = float(row[0])
-        scen["goal"] = (int(row[2]), int(row[1]))
-        scen["start"] = (int(row[4]), int(row[3]))
-        scen["dimensions"] = (int(row[6]), int(row[5]))
-        scen_list.append(scen)
-    return scen_list
+def display_formed_img(map_name: str, scen_index: int, algorithm: str):
+    img = plt.imread(f"output/{map_name}_{scen_index}_{algorithm}.png")
+    plt.imshow(img)
+    plt.pause(10)
+
+
+def display_formed_gif(map_name: str, scen_index: int, algorithm: str):
+    img = plt.imread(f"output/{map_name}_{scen_index}_{algorithm}.gif")
+    plt.imshow(img)
+    plt.pause(10)
 
 
 def create_diagonal_path(start: tuple, end: tuple, path: set) -> set:
@@ -121,6 +126,7 @@ def get_path_between_two_nodes(start: tuple, end: tuple, algorithm: str, visited
             path.add(path_node)
     return path
 
+
 def form_base_img(map_name: str, dimensions: tuple):
     try:
         im = Image.open(f"src/assets/images/{map_name}.png")
@@ -129,8 +135,10 @@ def form_base_img(map_name: str, dimensions: tuple):
         print(f"'{map_name}', {ex.strerror}")
         return None
 
+
 def save_created_image(map_name: str, scen_index: int, algorithm: str, im: Image):
     im.save(f"output/{map_name}_{str(scen_index)}_{algorithm}.png", "PNG")
+
 
 def draw_path_onto_map(start_and_end: tuple, algorithm: str, nodes: dict, visited: dict, im):
     """Piirtää karttaa edustavaan kuvaan löydetyn polun ja käsitellyt solmut.
@@ -183,69 +191,4 @@ def draw_and_save_found_pathfinding(
             visited,
             form_base_img(map_name, (scen["dimensions"][0], scen["dimensions"][1])),
         ),
-    )
-
-
-def get_available_maps():
-    """Hakee listan saatavilla olevista kartoista,
-    assets hakemiston png-tiedostojen perusteella.
-
-    Returns:
-        list: Lista tiedostojen nimiä, ilman tiedostopäätettä.
-    """
-    return [Path(filename).stem for filename in os.listdir("src/assets/images/")]
-
-
-class GifGenerator:
-    def __init__(self, map_name: str, dimensions:tuple, generate_gif: bool=False) -> None:
-        self.generate_gif = generate_gif
-        self.map_name = map_name
-        self.scen = None
-        self.algorithm = "dijkstra"
-        self.base_img = form_base_img(map_name, dimensions)
-        self.images = []
-        self._round_counter = 0
-
-    def set_run_parameters(self, scen:dict, algorithm: str):
-        self.images = []
-        self._round_counter = 0
-        self.scen = scen
-        self.algorithm = algorithm
-
-    def generate_new_image(self, next_queue_item, nodes, visited):
-        self._round_counter += 1
-        if self.algorithm == "jps":
-            end = next_queue_item[-1][-1]
-        else:
-            end = next_queue_item[-1]
-        if (self.algorithm == "jps" and self._round_counter == 5) or \
-            self._round_counter > self.scen["shortest"] / 2:
-            self.images.append(
-                draw_path_onto_map(
-                    (self.scen["start"], end),
-                    self.algorithm,
-                    nodes,
-                    visited,
-                    self.base_img.copy(),
-                )
-            )
-            self._round_counter = 0
-
-
-def create_gif(gifgen: GifGenerator, nodes: dict, visited: dict):
-    gifgen.images.append(
-        draw_path_onto_map(
-            (gifgen.scen["start"], gifgen.scen["goal"]),
-            gifgen.algorithm,
-            nodes,
-            visited,
-            gifgen.base_img.copy(),
-        )
-    )
-    gifgen.images[0].save(
-        f"output/{gifgen.map_name}_{str(gifgen.scen['index'])}_{gifgen.algorithm}.gif",
-        save_all=True,
-        append_images=gifgen.images[1:],
-        optimize=False,
-        duration=100,
     )

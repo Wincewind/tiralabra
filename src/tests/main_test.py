@@ -40,3 +40,15 @@ class TestMain(unittest.TestCase):
                 "JPS algoritmilla kesti polunetsinnässä kokonaisuudessaan:"
             )
         )
+
+
+    def test_running_main_program_with_several_cl_args(self):
+        io = StubIO("")
+        main(io,parser.parse_args(["-p","-g","-m","maze512-16-0","-i","-a","jps","-t 1","-s 200"]))
+        print(io.outputs)
+        self.assertTrue("algoritmin löytämä polku oli" in io.outputs[-2])
+        self.assertTrue(
+            io.outputs[-1].startswith(
+                "JPS algoritmilla kesti polunetsinnässä kokonaisuudessaan:"
+            )
+        )

@@ -1,5 +1,5 @@
 from heapq import heappop
-from assets_io import GifGenerator
+from services.visualization_service import GifGenerator
 
 
 class Node:
