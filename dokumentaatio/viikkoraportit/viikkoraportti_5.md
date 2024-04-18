@@ -7,4 +7,5 @@ Testasin vieruslistojen vaihtamista listoiksi sanakirjojen sijaan ja tämä näy
 | 15.4.  | 1h | Yritetty tehostaa JPS algoritmia |
 | 16.4.  | 3,5h | Testattu vieruslistojen vaihtamista yksiulotteisiksi |
 | 16.4.  | 3,5h | Lisätty GIF-animaation generointi optio |
-| Total  | 8h |  |
+| 18.4.  | 1,5h | Refaktoroitu koodia ja täydennetty testikattavuutta |
+| Total  | 9,5h |  |
