@@ -41,7 +41,7 @@ class TestAssetsService(unittest.TestCase):
 
     def test_get_available_maps(self):
         maps = assets_service.get_available_maps()
-        self.assertEqual(len(maps),3)
+        self.assertEqual(len(maps),5)
 
     def test_compare_dijkstra_a_star_and_jps_using_assets(self):
         graph = Graph(assets_service.read_map("London_1_512"), True)

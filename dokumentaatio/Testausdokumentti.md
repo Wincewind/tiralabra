@@ -4,7 +4,7 @@
 Ohjelmistossa on neljä testauksen kohdetta: algoritmit, tietorakenteet, syötteiden käsittely ja pääohjelma. Testit on tehty käyttäen Unittest-kehystä ja testit suorittavat yksikkötestausta yksittäisille toiminnoille, integraatio testausta kokonaisuuksille ja pääohjelman tapauksessa päästä päähän -testausta. Repositoriossa on käytössä GitHub actions, jolla nämä testit ajetaan pilvi-ympäristössä aina kun src-hakemistoa muokataan. Testauksen ulkopuolelle on jätetty käyttöliittymä, joka tässä tapauksessa on ainoastaan komentorivi syötteiden luku ja tulostus pääohjelmassa.
 
 ## Testikattavuus
-![testikattavuus_vko3](viikkoraportit/testikattavuus_vko4.png)
+![testikattavuus_vko5](viikkoraportit/testikattavuus_vko5.png)
 
 Visuaalisen esityksen testikattavuudesta voi nähdä myös CodeCov:sta: [![codecov](https://codecov.io/gh/Wincewind/tiralabra/graph/badge.svg?token=TGY0XJ0UZM)](https://codecov.io/gh/Wincewind/tiralabra)
 
