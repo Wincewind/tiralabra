@@ -8,7 +8,9 @@ Ohjelma koostuu neljästä eri osasta:
 Ohjelman voi käynnistää joko normaalisti tai hyödyntäen [komentorivi-argumentteja](https://github.com/Wincewind/tiralabra/blob/main/README.md#p%C3%A4%C3%A4ohjelman-k%C3%A4ynnist%C3%A4minen-komentorivi-argumenteilla). Käyttäjän syötteiden tuloksena valitaan jokin /assets/-kansion kartoista, sen skenaariot ja aloitetaan polunetsintä algoritmeilla. 
 
 ### Karttatiedostojen käsittely 
-Verkko, mihin polunetsintä suoritetaan, muodostetaan .map tiedostoista, missä on ASCII-merkeillä esitetty karttojen kuvia vastaavat pikselit. Merkit luetaan ja jaotellaan kaksiulotteiseen listaan verkon muodostamista varten. Tulosten esittämistä varten, hyödynnetään Pythonin PIL-kirjastoa värittämään polun, lähtö, maali ja karsittujen solmujen pikseleitä tietyillä väreillä. 
+Verkko, mihin polunetsintä suoritetaan, muodostetaan `.map` tiedostoista, missä on ASCII-merkeillä esitetty karttojen kuvia vastaavat pikselit. Merkit luetaan ja jaotellaan kaksiulotteiseen listaan verkon muodostamista varten. Tulosten esittämistä varten, hyödynnetään Pythonin PIL-kirjastoa värittämään polun, lähtö, maali ja karsittujen solmujen pikseleitä tietyillä väreillä. Algoritmeille verkon lähtö ja maali solmut luetaan karttoihin liittyvistä `.scen` tiedostoista, missä per rivi on määritetty "skenaarioita", eli lähdön xy-koordinaatit, maalin xy-koordinaatit ja tavoiteltava lyhyin mahdollinen polku näiden pisteiden välillä. Riviltä löytyy myös kartan dimensiot (alla 512x512), joita hyödynnetään muokatessa karttojen kuvia.
+<!--#L1-#L5-->
+https://github.com/Wincewind/tiralabra/blob/56eb15924505ac38b67698b6cbf0c93719c5dfa2/src/assets/scens/AR0413SR.map.scen#L1-L5
 
 ### Verkkotietorakenne ja sen muodostus 
 Ohjelman tietorakenteet on toteutettu luokkana, jossa on sanakirjat verkolle sekä etäisyyksille, mihin kirjataan myös polun aiemmat solmut, jotta polku voidaan jälkikäteen piirtää. Verkko on vieruslista, missä naapurit on numeroitu niiden suunnan mukaan 0-7. Numerointi alkaa kohtisuoraan ylhäältä nollalla ja sitä jatketaan myötäpäivään. Suuntaa hyödynnetään JPS algoritmissa, koska riippuen siitä saattaa esimerkiksi hyppypisteiden haku erota. Jos kulman leikkaus, eli esteen vierestä kulkeminen diagonaalisesti halutaan kieltää, on tähän asetus, joka poistaa kyseiset naapurit solmuilta. Solmuilla on myös oma luokkansa vieruslistassa, joihin voi JPS algoritmi merkitä, että kyseinen naapurisolmu on karsittu. 
@@ -16,7 +18,7 @@ Ohjelman tietorakenteet on toteutettu luokkana, jossa on sanakirjat verkolle sek
 ### Algoritmien suoritus 
 Kun karttojen tiedot on luettu ja verkko muodostettu, otetaan karttojen skenaario tiedoista etsittävälle polulle alku ja loppu koordinaatit. Nämä verkko-olion lisäksi ovat algoritmeilla ainoat tarvittavat syötteet, jonka jälkeen polunetsintää voidaan suorittaa Dijkstra, A* ja JPS algoritmeilla. Pääasiallinen suoritettava vertailu ohjelmassa on algoritmien suoritusajat. Algoritmeja ajetaan muutama kerta ja ohjelma tulostaa mittausten keskiarvon. Jos kuvien muodostus on käytössä, ohjelma avaa näytölle kuvan muodostetusta polusta jokaisella ajettavalla algoritmilla. 
 
-Kun kaikki valitut skenaariot on ajettu tulostaa ohjelma komentokehotteeseen jokaisen algoritmin polunetsinnän kestojen keskiarvojen summan.  
+Kun kaikki valitut skenaariot on ajettu tulostaa ohjelma komentokehotteeseen jokaisen algoritmin polunetsinnän kestojen keskiarvojen summat.  
 
 ## Aikavaativuudet 
 
