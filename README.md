@@ -54,7 +54,7 @@ Pääohjelman käynnistys tapahtuu suorittamalla komento:
 ```bash
 poetry run python src/main.py
 ```
-Jos ohjelma halutaan keskeyttää ennenaikaisesti, tapahtuu tämä syöttämällä komentokehotteeseen näppäinyhdistelmä _CTRL+C_ .
+Jos ohjelma halutaan keskeyttää ennenaikaisesti, tapahtuu tämä syöttämällä komentokehotteeseen näppäinyhdistelmä `CTRL+C` .
 
 ### Pääohjelman käynnistäminen komentorivi-argumenteilla
 Pääohjelman voi käynnistää myös käyttäen komentorivi-argumentteja. Näillä säätämällä voi testausta kustomoida itsellensä sopivaksi ja saatavilla on myös enemmän optioita. Suoritusaikojen keskiarvojen lisäksi, voidaan myös esim. tulostaa odotettu ja löydetty polun pituus, ajaa vain tiettyjä algoritmeja tai ottaa pois käytöstä reitin piirtämisen ja kuvan tuottamisen. Kun halutaan suorittaa jokin testiajo uudestaan on näiden käytöstä erityisesti hyötyä. Suorittamalla komennon:
@@ -83,7 +83,10 @@ options:
   --allow_corner_cuts   Oletuksena esteiden kulmien leikkausta ei sallita. Tällä argumentilla voidaan se mahdollistaa, jolloin löydetyt polut ovat lyhyempiä.
   -g, --gif             Muodosta polunetsinnästä gif-animaatio.
 ```
-**Huom!**, argumentilla -c ei ole mitään ylärajaa, joten suorituksessa voi kestää todella kauan jos se on paljon kymmentä korkeampi. Keskeyttäminen tapahtui näppäinyhdistelmällä _CTRL+C_ .
+**Huom #1!**, argumentilla -c ei ole mitään ylärajaa, joten suorituksessa voi kestää todella kauan jos se on paljon kymmentä korkeampi. Keskeyttäminen tapahtui näppäinyhdistelmällä `CTRL+C` .
+
+**Huom #2!**, gif-animaatiota ei tällä hetkellä pystytä näyttämään käyttäjälle ajon päätteeksi, mutta muodostetut animaatiot löytyvät `output`-kansiosta nimellä:
+`{kartan nimi}_{suoritetun skenaarion indeksi}_{algoritmi jonka suorituksesta animaatio luotu, dijkstra/A_star/jps}.gif`
 
 Komentorivi-argumentteja voi käyttää esim. seuraavasti:
 ```bash
