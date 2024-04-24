@@ -25,7 +25,7 @@ def write_totals(io, totals, algorithms):
             f"Dijkstran algoritmilla kesti polunetsinnässä kokonaisuudessaan: \
 {totals['dijkstra']} s."
         )
-    if "A_star" in algorithms:
+    if "a_star" in algorithms:
         io.write(
             f"A* algoritmilla kesti polunetsinnässä kokonaisuudessaan: \
 {totals['a_star']} s."
@@ -86,7 +86,7 @@ def main(io, cl_args):
     totals = algorithms_service.run_scenarios(
         io, map_name, scens_to_test, graph, scens, algorithms, cl_args
     )
-    write_totals(io, totals, algorithms)
+    write_totals(io, totals, [a.__name__ for a in algorithms])
 
 
 if __name__ == "__main__":

@@ -54,9 +54,9 @@ parser.add_argument(
     help="Valinnalla voidaan valita, \
                     mitä algoritmeja halutaan testata",
     dest="algorithms",
-    choices=["dijkstra", "A_star", "jps"],
+    choices=["dijkstra", "a_star", "jps"],
     nargs="+",
-    default=["dijkstra", "A_star", "jps"],
+    default=["dijkstra", "a_star", "jps"],
 )
 parser.add_argument(
     "-p",

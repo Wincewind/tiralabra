@@ -1,3 +1,4 @@
+import os
 import matplotlib.pyplot as plt
 from PIL import Image
 
@@ -13,12 +14,31 @@ class GifGenerator:
         self._round_counter = 0
 
     def set_run_parameters(self, scen:dict, algorithm: str):
+        """Nollataan ja asetetaan ajettavan skenaarion tiedot
+        uuden animaation muodostamista varten.
+
+        Args:
+            scen (dict): Skenaarion tiedot sanakirjassa.
+            algorithm (str): Algoritmin nimi, jolla polkua etsitään.
+        """
         self.images = []
         self._round_counter = 0
         self.scen = scen
         self.algorithm = algorithm
 
     def generate_new_image(self, next_queue_item, nodes, visited):
+        """Muodostetaan uusi kuva gif-animaatioon. Polun muodostamisen
+        tilannetta ei piirretä jokaisen solmun kohdalla vaan joka viides
+        solmu jps:llä ja dijkstralla A*:lla vaihdellen riippuen lyhyimmän
+        polun pituudesta.
+
+        Args:
+            next_queue_item (tuple): Algoritmin keon seuraava pienimmän
+            etäisyyden/hinnan solmu.
+            nodes (dict): Verkon solmut vieruslistana.
+            visited (dict): Sanakirja käsiteltyjä solmuja, mistä voidaan
+            muodostaa algoritmin löytämä reitti.
+        """
         self._round_counter += 1
         if self.algorithm == "jps":
             end = next_queue_item[-1][-1]
@@ -39,6 +59,14 @@ class GifGenerator:
 
 
 def create_gif(gifgen: GifGenerator, nodes: dict, visited: dict):
+    """Lisätään animaatioon kuva lopullisesta löydetystä polusta ja muodostetaan animaatio. 
+
+    Args:
+        gifgen (GifGenerator): GifGenerator-olio.
+        nodes (dict): Verkon solmut vieruslistana viimeistä kuvaa varten.
+        visited (dict): Sanakirja käsiteltyjä solmuja, mistä voidaan
+            muodostaa algoritmin löytämä reitti.
+    """
     gifgen.images.append(
         draw_path_onto_map(
             (gifgen.scen["start"], gifgen.scen["goal"]),
@@ -64,9 +92,10 @@ def display_formed_img(map_name: str, scen_index: int, algorithm: str):
 
 
 def display_formed_gif(map_name: str, scen_index: int, algorithm: str):
-    img = plt.imread(f"output/{map_name}_{scen_index}_{algorithm}.gif")
-    plt.imshow(img)
-    plt.pause(10)
+    gif_cmd = os.path.join("output",f"{map_name}_{scen_index}_{algorithm}.gif")
+    if os.name != "nt": #nt == Windows
+        gif_cmd = "open "+gif_cmd
+    os.system(gif_cmd)
 
 
 def create_diagonal_path(start: tuple, end: tuple, path: set) -> set:
@@ -90,12 +119,13 @@ def create_diagonal_path(start: tuple, end: tuple, path: set) -> set:
 
 def get_path_between_two_nodes(start: tuple, end: tuple, algorithm: str, visited: dict) -> set:
     """Muodostaa ja palauttaa joukon solmuja kahden pisteen väliltä. Riippuen algoritmista, 
-    polun määritys myös eroaa.
+    polun määritys myös eroaa. Funktio on tarkoitettu hyödynnettäväksi polun piirtämisessä
+    kartan kuva-tiedostoon.
 
     Args:
         start (tuple): alkusolmu
         end (tuple): loppusolmu
-        algorithm (str): Joko 'dijkstra', 'A_star' tai 'jps'.
+        algorithm (str): Joko 'dijkstra', 'a_star' tai 'jps'.
         visited (dict): Sanakirja solmuja ja arvona tuple: (etäisyys, solmu mistä ollaan saavuttu)
 
     Returns:
@@ -140,23 +170,18 @@ def save_created_image(map_name: str, scen_index: int, algorithm: str, im: Image
     im.save(f"output/{map_name}_{str(scen_index)}_{algorithm}.png", "PNG")
 
 
-def draw_path_onto_map(start_and_end: tuple, algorithm: str, nodes: dict, visited: dict, im):
+def draw_path_onto_map(start_and_end: tuple, algorithm: str, nodes: dict, visited: dict, im: Image):
     """Piirtää karttaa edustavaan kuvaan löydetyn polun ja käsitellyt solmut.
-    Muokattu kuva tallennetaan output/ -kansioon
 
     Args:
-        map_name (str): Tiedoston nimi ilman .png päätettä.
-        scen_index (int): Erotteleva indeksi, joka lisätään kuvasta tallennettavan kopion nimeen.
-
-        scen (dict): sanakirja skenaarion tiedoista. Tämä koostuu:
-        - start (tuple): lähdön x,y -koordinaatti
-        - goal (tuple): maalin x,y -koordinaatti
-        - shortest (int): lyhyin polku start ja goal välillä
-        - dimensions (tuple): kartan leveys ja korkeus pikseleissä
-
+        start_and_end (tuple): lähdön ja maalin x,y -koordinaatit.
+        algorithm (str): Algoritmin nimi, joko dijkstra, a_star tai jps.
+        nodes (dict): Verkon solmut vieruslistana viimeistä kuvaa varten.
         visited (dict): sanakirja käsitellyistä solmuista. (x,y)-koordinaatti on avain ja arvona
     on tuple muodossa koordinaattiin kuljettu lyhyin matka ja viereinen koordinaatti mistä
     avain-koordinaattiin on kuljettu.
+        im (PIL.Image): Kuva, jonka pikseleiden väriä muuttamalla
+        polku sekä algoritmin käsittelemät solmut visualisoidaan.
     """
     pix = im.load()
     for node in visited:
