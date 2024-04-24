@@ -13,6 +13,7 @@
 - [Viikkoraportti 3](dokumentaatio/viikkoraportit/viikkoraportti_3.md)
 - [Viikkoraportti 4](dokumentaatio/viikkoraportit/viikkoraportti_4.md)
 - [Viikkoraportti 5](dokumentaatio/viikkoraportit/viikkoraportti_5.md)
+- [Viikkoraportti 6](dokumentaatio/viikkoraportit/viikkoraportti_6.md)
 
 ## Asennus
 Kun repo on kloonattu haluamaasi hakemistoon, siirry projektin juurihakemistoon ja asenna riippuvuudet komennolla:
