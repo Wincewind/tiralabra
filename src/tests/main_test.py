@@ -52,3 +52,14 @@ class TestMain(unittest.TestCase):
                 "JPS algoritmilla kesti polunetsinnässä kokonaisuudessaan:"
             )
         )
+
+    def test_running_main_program_with_several_cl_args_2(self):
+            io = StubIO("")
+            main(io,parser.parse_args(["-p","-m","AR0413SR","-i","-a","dijkstra","-t 2","-c 1000","-r 611"]))
+            print(io.outputs)
+            self.assertTrue("algoritmin löytämä polku oli" in io.outputs[-2])
+            self.assertTrue(
+                io.outputs[-1].startswith(
+                    "Dijkstran algoritmilla kesti polunetsinnässä kokonaisuudessaan:"
+                )
+            )

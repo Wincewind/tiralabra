@@ -54,21 +54,18 @@ suorita 1-10 satunnaista skenaariota (2):"
         choice = io.read(prompt, ["1", "2"])
     else:
         choice = str(cl_args.test_type)
-    scens_to_test = cl_args.scenario
-    scen_idxs = [str(i) for i in range(len(scens))]
-    if choice == "1" and (
-        scens_to_test is None
-        or not all(str(scen) in scen_idxs for scen in scens_to_test)
-    ):
+    scen_idxs = cl_args.scenario
+    scens_to_test = range(len(scens))
+    all_chosen_scens_are_valid = scen_idxs is not None \
+    and all(index in scens_to_test for index in scen_idxs)
+    if choice == "1" and not all_chosen_scens_are_valid:
         prompt = f"Valitse skenaarion indeksi välillä 0-{len(scens)-1}:"
-        scens_to_test = [int(io.read(prompt, scen_idxs))]
-    elif choice == "1" and all(
-        scen for scen in scens_to_test if str(scen) not in scen_idxs
-    ):
-        pass
+        scens_to_test = [scens[int(io.read(prompt, scen_idxs))]]
+    elif choice == "1" and all_chosen_scens_are_valid:
+        scens_to_test = [scen for scen in scens if scen["index"] in scen_idxs]
     elif choice == "2" and cl_args.amount not in range(1, len(scens)):
         prompt = "Kuinka monta skenaariota suoritetaan (1-10)?"
-        n = io.read(prompt, [str(i) for i in range(1, 11)])
+        n = int(io.read(prompt, [str(i) for i in range(1, 11)]))
         scens_to_test = assets_service.get_random_scens(scens, n, cl_args.shortest_range)
     else:
         scens_to_test = assets_service.get_random_scens(

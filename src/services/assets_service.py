@@ -83,4 +83,4 @@ def get_random_scens(scens:list, amount:int, shortest_range: list):
         print(f"Lyhimmän polun pituusväliltä {shortest_range[0]} - {shortest_range[1]} \
 löytyy vain {len(scens)} skenaariota.")
         amount = len(scens)
-    return choices(scens, k=int(amount))
+    return choices(scens, k=amount)

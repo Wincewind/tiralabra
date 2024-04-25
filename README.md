@@ -64,12 +64,12 @@ poetry run python src/main.py -h
 ```
 Pitäisi näkyä seuraavat ohjeet:
 ```bash
-usage: main.py [-h] [-m {AR0413SR,London_1_512,maze512-16-0}] [-t {1,2}] [-s SCENARIO [SCENARIO ...]] [-c AMOUNT] [-i] [-a {dijkstra,A_star,jps} [{dijkstra,A_star,jps} ...]] [-p]
-               [--allow_corner_cuts] [-g]
+usage: main.py [-h] [-m {64room_001,AR0406SR,AR0413SR,London_1_512,maze512-16-0}] [-t {1,2}] [-s SCENARIO [SCENARIO ...]] [-c AMOUNT] [-r [SHORTEST_RANGE ...]] [-i]
+               [-a {dijkstra,a_star,jps} [{dijkstra,a_star,jps} ...]] [-p] [--allow_corner_cuts] [-g]
 
 options:
   -h, --help            show this help message and exit
-  -m {AR0413SR,London_1_512,maze512-16-0}, --map {AR0413SR,London_1_512,maze512-16-0}
+  -m {64room_001,AR0406SR,AR0413SR,London_1_512,maze512-16-0}, --map {64room_001,AR0406SR,AR0413SR,London_1_512,maze512-16-0}
                         Kartan nimi, jolle testit ajetaan.
   -t {1,2}, --test {1,2}
                         Testin tyyppi, 1: ajetaan vain tietty(jä) skenaario(ita), 2: ajetaan x määrä satunnaisia skenaarioita
@@ -77,8 +77,10 @@ options:
                         Ajettavien skenaarioiden indeksit, jos test_type=1. Huom. eri kartoilla on eri määrä ajettavia skenaarioita
   -c AMOUNT, --count AMOUNT
                         Satunnaisten skenaarioiden lukumäärä, jos test_type=2
+  -r [SHORTEST_RANGE ...], --range [SHORTEST_RANGE ...]
+                        Määrittää satunnaisille skenaarioille lyhimmän polun ala- ja/tai ylärajan, jos test_type=2. Arvoksi voi antaa joko vain alarajan tai ala- ja ylärajan. Arvoja voi syöttää enemmän kuin kaksi, mutta vain kaksi ensimmäistä otetaan huomioon.
   -i, --images          Valinnalla voidaan estää pääohjelmaa piirtämästä kuvia algoritmien testeistä. Oletuksena kuvat piirretään
-  -a {dijkstra,A_star,jps} [{dijkstra,A_star,jps} ...], --algorithms {dijkstra,A_star,jps} [{dijkstra,A_star,jps} ...]
+  -a {dijkstra,a_star,jps} [{dijkstra,a_star,jps} ...], --algorithms {dijkstra,a_star,jps} [{dijkstra,a_star,jps} ...]
                         Valinnalla voidaan valita, mitä algoritmeja halutaan testata
   -p, --path            Löydetyn polun pituus tulostetaan
   --allow_corner_cuts   Oletuksena esteiden kulmien leikkausta ei sallita. Tällä argumentilla voidaan se mahdollistaa, jolloin löydetyt polut ovat lyhyempiä.
@@ -97,9 +99,15 @@ jonka seurauksena ajetaan kartalla London_1_512 skenaariot 100, 200 ja 300 niin 
 
 Komennolla:
 ```bash
-poetry run python src/main.py -m maze512-16-0 -t 2 -c 20 -a A_star jps -i
+poetry run python src/main.py -m maze512-16-0 -t 2 -c 20 -a a_star jps -i -r 100
 ```
-suoritetaan kartalla maze512-16-0 polunetsintä ainoastaan A* ja JPS algoritmeilla 20:ssä satunnaisessa skenaariossa. Kuvia löydetystä polusta ei muodosteta. **Huom!** tämän suorittamisessa saattaa kestää hetki.
+suoritetaan kartalla maze512-16-0 polunetsintä ainoastaan A* ja JPS algoritmeilla 20:ssä satunnaisessa skenaariossa, joiden lyhimmän reitin pituus on pidempi kuin 100. Kuvia löydetystä polusta ei muodosteta. **Huom!** tämän suorittamisessa saattaa kestää hetki.
+
+Komennolla:
+```bash
+poetry run python src/main.py -m 64room_001 -t 2 -c 5 -a a_star jps -i -g -r 600 700
+```
+suoritetaan kartalla 64room_001 polunetsintä ainoastaan A* ja JPS algoritmeilla viidessä satunnaisessa skenaariossa, joiden lyhimmän reitin pituus on välillä 600-700. Kuvia löydetystä polusta ei muodosteta, mutta gif-animaatiot muodostetaan. **Huom!** GIF-animaatioiden muodostaminen pidentää polunetsintään kuluvaa aikaa. Mitä pidempi etsittävä reitti, sitä pidempi on myös animaatio. 
 
 ### Pylint
 
