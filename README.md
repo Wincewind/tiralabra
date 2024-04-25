@@ -6,6 +6,7 @@
 - [Määrittelydokumentti](dokumentaatio/Määrittelydokumentti.md)
 - [Testausdokumentti](dokumentaatio/Testausdokumentti.md)
 - [Toteutusdokumentti](dokumentaatio/Toteutusdokumentti.md)
+- [Käyttöohje](README.md#p%C3%A4%C3%A4ohjelman-k%C3%A4ynnist%C3%A4minen)
 
 ### Viikkoraportit
 - [Viikkoraportti 1](dokumentaatio/viikkoraportit/viikkoraportti_1.md)
@@ -95,7 +96,7 @@ options:
 ```
 **Huom #1!**, argumentilla -c ei ole mitään ylärajaa, joten suorituksessa voi kestää todella kauan jos se on paljon kymmentä korkeampi. Keskeyttäminen tapahtui näppäinyhdistelmällä `CTRL+C` .
 
-**Huom #2!**, gif-animaatiota ei tällä hetkellä pystytä näyttämään käyttäjälle ajon päätteeksi, mutta muodostetut animaatiot löytyvät `output`-kansiosta nimellä:
+**Huom #2!**, Kun gif-animaatiot avataan, tämä ei pysäytä pääohjelman suoritusta. Muodostetut animaatiot voi käynnistää uudestaan avaamalla ne. Animaatiot löytyvät `output`-kansiosta nimellä:
 `{kartan nimi}_{suoritetun skenaarion indeksi}_{algoritmi jonka suorituksesta animaatio luotu, dijkstra/A_star/jps}.gif`
 
 Komentorivi-argumentteja voi käyttää esim. seuraavasti:
