@@ -40,6 +40,18 @@ parser.add_argument(
     default=-1,
 )
 parser.add_argument(
+    "-r",
+    "--range",
+    help="Määrittää satunnaisille skenaarioille lyhimmän polun ala- \
+        ja/tai ylärajan, jos test_type=2. Arvoksi voi antaa joko vain alarajan tai \
+        ala- ja ylärajan. Arvoja voi syöttää enemmän kuin kaksi, mutta \
+            vain kaksi ensimmäistä otetaan huomioon.",
+    dest="shortest_range",
+    type=float,
+    nargs="*",
+    default=[-float("inf"),float("inf")]
+)
+parser.add_argument(
     "-i",
     "--images",
     help="Valinnalla voidaan estää pääohjelmaa piirtämästä kuvia \
@@ -69,7 +81,8 @@ parser.add_argument(
 parser.add_argument(
     "--allow_corner_cuts",
     help="Oletuksena esteiden kulmien leikkausta ei sallita. \
-                    Tällä argumentilla voidaan se mahdollistaa, jolloin löydetyt polut ovat lyhyempiä.",
+                    Tällä argumentilla voidaan se mahdollistaa, \
+                        jolloin löydetyt polut ovat lyhyempiä.",
     dest="no_corner_cuts",
     default=True,
     action="store_false",
@@ -83,3 +96,4 @@ parser.add_argument(
     default=False,
     action="store_true",
 )
+

@@ -57,7 +57,6 @@ def run_scenarios(
     map_name: str,
     scens_to_test: list,
     graph: Graph,
-    scens: list,
     algorithms: list,
     cl_args,
 ):
@@ -65,10 +64,11 @@ def run_scenarios(
     totals["dijkstra"] = 0
     totals["jps"] = 0
     totals["a_star"] = 0
-    for i in scens_to_test:
-        scen = scens[i]
+    for scen in scens_to_test:
         for algorithm in algorithms:
-            io.write(f"Testataan skenaariota {i} algoritmilla {algorithm.__name__}:")
+            io.write(
+                f"Testataan skenaariota {scen['index']} algoritmilla {algorithm.__name__}:"
+            )
             runs = run_scenario_for_algorithm(algorithm, graph, scen)
             totals = calculate_and_write_run_stats(
                 io, runs, totals, scen, algorithm.__name__, cl_args, graph
@@ -77,8 +77,14 @@ def run_scenarios(
                 visualization_service.draw_and_save_found_pathfinding(
                     map_name, scen, algorithm.__name__, graph.nodes, graph.visited
                 )
-                visualization_service.display_formed_img(map_name, i, algorithm.__name__)
+                visualization_service.display_formed_img(
+                    map_name, scen["index"], algorithm.__name__
+                )
             if cl_args.gif:
-                visualization_service.create_gif(graph.gifgen, graph.nodes, graph.visited)
-                visualization_service.display_formed_gif(map_name, i, algorithm.__name__)
+                visualization_service.create_gif(
+                    graph.gifgen, graph.nodes, graph.visited
+                )
+                visualization_service.display_formed_gif(
+                    map_name, scen["index"], algorithm.__name__
+                )
     return totals

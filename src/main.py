@@ -69,9 +69,10 @@ suorita 1-10 satunnaista skenaariota (2):"
     elif choice == "2" and cl_args.amount not in range(1, len(scens)):
         prompt = "Kuinka monta skenaariota suoritetaan (1-10)?"
         n = io.read(prompt, [str(i) for i in range(1, 11)])
-        scens_to_test = assets_service.get_random_scens(scens, n)
+        scens_to_test = assets_service.get_random_scens(scens, n, cl_args.shortest_range)
     else:
-        scens_to_test = assets_service.get_random_scens(scens, cl_args.amount)
+        scens_to_test = assets_service.get_random_scens(
+            scens, cl_args.amount, cl_args.shortest_range)
     return scens_to_test
 
 
@@ -84,7 +85,7 @@ def main(io, cl_args):
     )
     algorithms = algorithms_service.select_algorithms_to_test(cl_args)
     totals = algorithms_service.run_scenarios(
-        io, map_name, scens_to_test, graph, scens, algorithms, cl_args
+        io, map_name, scens_to_test, graph, algorithms, cl_args
     )
     write_totals(io, totals, [a.__name__ for a in algorithms])
 

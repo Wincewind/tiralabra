@@ -1,10 +1,13 @@
 import os
+from math import cos, sin, floor
 import matplotlib.pyplot as plt
 from PIL import Image
 
 
 class GifGenerator:
-    def __init__(self, map_name: str, dimensions:tuple, generate_gif: bool=False) -> None:
+    def __init__(
+        self, map_name: str, dimensions: tuple, generate_gif: bool = False
+    ) -> None:
         self.generate_gif = generate_gif
         self.map_name = map_name
         self.scen = None
@@ -13,7 +16,7 @@ class GifGenerator:
         self.images = []
         self._round_counter = 0
 
-    def set_run_parameters(self, scen:dict, algorithm: str):
+    def set_run_parameters(self, scen: dict, algorithm: str):
         """Nollataan ja asetetaan ajettavan skenaarion tiedot
         uuden animaation muodostamista varten.
 
@@ -44,11 +47,13 @@ class GifGenerator:
             end = next_queue_item[-1][-1]
         else:
             end = next_queue_item[-1]
-        if (self.algorithm == "jps" and self._round_counter == 5) or \
-            self._round_counter > self.scen["shortest"] / 2:
+        if (
+            self.algorithm == "jps" or (self.scen["shortest"] > 1000 and self._round_counter == 5)
+        ) or self._round_counter > self.scen["shortest"] / 2:
             self.images.append(
                 draw_path_onto_map(
                     (self.scen["start"], end),
+                    self.scen["goal"],
                     self.algorithm,
                     nodes,
                     visited,
@@ -59,7 +64,7 @@ class GifGenerator:
 
 
 def create_gif(gifgen: GifGenerator, nodes: dict, visited: dict):
-    """Lisätään animaatioon kuva lopullisesta löydetystä polusta ja muodostetaan animaatio. 
+    """Lisätään animaatioon kuva lopullisesta löydetystä polusta ja muodostetaan animaatio.
 
     Args:
         gifgen (GifGenerator): GifGenerator-olio.
@@ -70,6 +75,7 @@ def create_gif(gifgen: GifGenerator, nodes: dict, visited: dict):
     gifgen.images.append(
         draw_path_onto_map(
             (gifgen.scen["start"], gifgen.scen["goal"]),
+            gifgen.scen["goal"],
             gifgen.algorithm,
             nodes,
             visited,
@@ -86,15 +92,17 @@ def create_gif(gifgen: GifGenerator, nodes: dict, visited: dict):
 
 
 def display_formed_img(map_name: str, scen_index: int, algorithm: str):
+    """Avaa suorituksen tuloksena muodostetun kuvan."""
     img = plt.imread(f"output/{map_name}_{scen_index}_{algorithm}.png")
     plt.imshow(img)
     plt.pause(10)
 
 
 def display_formed_gif(map_name: str, scen_index: int, algorithm: str):
-    gif_cmd = os.path.join("output",f"{map_name}_{scen_index}_{algorithm}.gif")
-    if os.name != "nt": #nt == Windows
-        gif_cmd = "open "+gif_cmd
+    """Avaa suorituksen tuloksena muodostetun gif-animaation."""
+    gif_cmd = os.path.join("output", f"{map_name}_{scen_index}_{algorithm}.gif")
+    if os.name != "nt":  # nt == Windows
+        gif_cmd = "open " + gif_cmd
     os.system(gif_cmd)
 
 
@@ -104,21 +112,23 @@ def create_diagonal_path(start: tuple, end: tuple, path: set) -> set:
     x1, y1 = start
     x2, y2 = end
     if x1 < x2 and y1 > y2:
-        mod = (1,-1)
+        mod = (1, -1)
     elif x1 < x2 and y1 < y2:
-        mod = (1,1)
+        mod = (1, 1)
     elif x1 > x2 and y1 < y2:
-        mod = (-1,1)
+        mod = (-1, 1)
     else:
-        mod = (-1,-1)
-    while (x1,y1) != end:
-        x1, y1 = x1+mod[0], y1 + mod[1]
-        path.add((x1,y1))
+        mod = (-1, -1)
+    while (x1, y1) != end:
+        x1, y1 = x1 + mod[0], y1 + mod[1]
+        path.add((x1, y1))
     return path
 
 
-def get_path_between_two_nodes(start: tuple, end: tuple, algorithm: str, visited: dict) -> set:
-    """Muodostaa ja palauttaa joukon solmuja kahden pisteen väliltä. Riippuen algoritmista, 
+def get_path_between_two_nodes(
+    start: tuple, end: tuple, algorithm: str, visited: dict
+) -> set:
+    """Muodostaa ja palauttaa joukon solmuja kahden pisteen väliltä. Riippuen algoritmista,
     polun määritys myös eroaa. Funktio on tarkoitettu hyödynnettäväksi polun piirtämisessä
     kartan kuva-tiedostoon.
 
@@ -144,20 +154,30 @@ def get_path_between_two_nodes(start: tuple, end: tuple, algorithm: str, visited
             x2, y2 = path_node
             # Solmut samalla rivillä
             if x1 == x2:
-                for i in range(abs(y1-y2)):
-                    path.add((x1,min(y1,y2)+i))
+                for i in range(abs(y1 - y2)):
+                    path.add((x1, min(y1, y2) + i))
             # Solmut samassa sarakkeessa
             elif y1 == y2:
-                for i in range(abs(x1-x2)):
-                    path.add((min(x1,x2)+i,y1))
+                for i in range(abs(x1 - x2)):
+                    path.add((min(x1, x2) + i, y1))
             # Solmujen väli on diagonaalinen
             else:
-                path = create_diagonal_path((x1,y1),(x2,y2),path)
+                path = create_diagonal_path((x1, y1), (x2, y2), path)
             path.add(path_node)
     return path
 
 
 def form_base_img(map_name: str, dimensions: tuple):
+    """Luo Image-olion assets-kansiosta löytyvälle kuvalle.
+
+    Args:
+        map_name (str): Kartan nimi.
+        dimensions (tuple): Kuvan leveys ja korkeus.
+
+    Returns:
+        Image/None: Palautetaan PIL Image-olio,
+        jos kartan nimellä löytyi .png tiedosto, muuten None.
+    """
     try:
         im = Image.open(f"src/assets/images/{map_name}.png")
         return im.resize(dimensions, Image.Resampling.LANCZOS)
@@ -170,11 +190,71 @@ def save_created_image(map_name: str, scen_index: int, algorithm: str, im: Image
     im.save(f"output/{map_name}_{str(scen_index)}_{algorithm}.png", "PNG")
 
 
-def draw_path_onto_map(start_and_end: tuple, algorithm: str, nodes: dict, visited: dict, im: Image):
+def calculate_circle_coords_around_origin(origin: tuple, radius: int) -> list:
+    """Laskee ympyrän kehän koordinaatit.
+
+    Args:
+        origin (tuple): Ympyrän keskipiste.
+        radius (int): Ympyrän säde.
+
+    Returns:
+        set: kokoelma ympyrän kehän pisteitä sekä sen keskipiste.
+    """
+    circle_coords = {origin}
+    j, k = origin
+    for t in range(360):
+        x = floor(radius * cos(t) + j)
+        y = floor(radius * sin(t) + k)
+        if x < 0 or y < 0:
+            continue
+        circle_coords.add((x, y))
+    return circle_coords
+
+
+def draw_circles_around_start_and_goal(start: tuple, goal: tuple, im: Image) -> Image:
+    """Värittää lähdön ja maalin ympäröimät pikselit niiden korostamiseksi.
+
+    Args:
+        start (tuple): Lähdön x,y-koordinaatit.
+        goal (tuple): Maalin x,y-koordinaatit.
+        im (Image): Kuva, johon pisteet korostetaan.
+
+    Returns:
+        Image: Kuva, johon maali- ja lähtöpisteet on korostettu.
+    """
+    pix = im.load()
+    green = (0, 255, 0)
+    red = (255, 0, 0)
+    for origin, radius, color in (
+        (start, 9, green),
+        (start, 10, green),
+        (goal, 9, red),
+        (goal, 10, red),
+    ):
+        for coord in calculate_circle_coords_around_origin(origin, radius):
+            try:
+                pix[coord] = color
+            except (
+                IndexError
+            ):  # Ympyrän kehä saattaa muodostua kuvan rajojen ulkopuolelle.
+                pass
+    return im
+
+
+def draw_path_onto_map(
+    path_start_and_end: tuple,
+    goal: tuple,
+    algorithm: str,
+    nodes: dict,
+    visited: dict,
+    im: Image,
+):
     """Piirtää karttaa edustavaan kuvaan löydetyn polun ja käsitellyt solmut.
 
     Args:
-        start_and_end (tuple): lähdön ja maalin x,y -koordinaatit.
+        path_start_and_end (tuple): Polun alun ja päätepisteen x,y -koordinaatit.
+        goal (tuple): Etsittävä maali. Koordinaatteja käytetään korostamaan maalin
+        sijaintia kartalla ympyröimällä se.
         algorithm (str): Algoritmin nimi, joko dijkstra, a_star tai jps.
         nodes (dict): Verkon solmut vieruslistana viimeistä kuvaa varten.
         visited (dict): sanakirja käsitellyistä solmuista. (x,y)-koordinaatti on avain ja arvona
@@ -187,14 +267,14 @@ def draw_path_onto_map(start_and_end: tuple, algorithm: str, nodes: dict, visite
     for node in visited:
         for _, n in nodes[node].items():
             if not n.obstacle and n.pruned:
-                pix[n.coords] = (128,128,128)  # Karsitut solmut väri: (Harmaa)
+                pix[n.coords] = (128, 128, 128)  # Karsitut solmut väri: (Harmaa)
         pix[node] = (0, 255, 255)  # Solmut missä käyty väri: (Cyan)
-
-    path = get_path_between_two_nodes(start_and_end[0], start_and_end[1], algorithm, visited)
+    im = draw_circles_around_start_and_goal(path_start_and_end[0], goal, im)
+    path = get_path_between_two_nodes(
+        path_start_and_end[0], path_start_and_end[1], algorithm, visited
+    )
     for node in path:
         pix[node] = (255, 0, 255)  # Polku väri: (Magenta)
-    pix[start_and_end[0]] = (0, 255, 0)  # Alku väri: Vihreä
-    pix[start_and_end[1]] = (255, 0, 0)  # Maali väri: Punainen
     return im
 
 
@@ -211,6 +291,7 @@ def draw_and_save_found_pathfinding(
         algorithm,
         draw_path_onto_map(
             (scen["start"], scen["goal"]),
+            scen["goal"],
             algorithm,
             nodes,
             visited,

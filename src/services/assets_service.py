@@ -75,5 +75,12 @@ def get_available_maps():
     return [Path(filename).stem for filename in os.listdir("src/assets/images/")]
 
 
-def get_random_scens(scens:list, amount:int):
-    return choices(range(len(scens)), k=int(amount))
+def get_random_scens(scens:list, amount:int, shortest_range: list):
+    if len(shortest_range) < 2:
+        shortest_range.append(float("inf"))
+    scens = [scen for scen in scens if shortest_range[0] <= scen["shortest"] <= shortest_range[1]]
+    if len(scens) < amount:
+        print(f"Lyhimmän polun pituusväliltä {shortest_range[0]} - {shortest_range[1]} \
+löytyy vain {len(scens)} skenaariota.")
+        amount = len(scens)
+    return choices(scens, k=int(amount))
