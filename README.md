@@ -64,7 +64,8 @@ poetry run python src/main.py -h
 ```
 Pitäisi näkyä seuraavat ohjeet:
 ```bash
-usage: main.py [-h] [-m {64room_001,AR0406SR,AR0413SR,London_1_512,maze512-16-0}] [-t {1,2}] [-s SCENARIO [SCENARIO ...]] [-c AMOUNT] [-r [SHORTEST_RANGE ...]] [-i]
+usage: main.py [-h] [-m {64room_001,AR0406SR,AR0413SR,London_1_512,maze512-16-0}] [-t {1,2}]
+               [-s SCENARIO [SCENARIO ...]] [-c AMOUNT] [-r [SHORTEST_RANGE ...]] [-i]
                [-a {dijkstra,a_star,jps} [{dijkstra,a_star,jps} ...]] [-p] [--allow_corner_cuts] [-g]
 
 options:
@@ -72,18 +73,24 @@ options:
   -m {64room_001,AR0406SR,AR0413SR,London_1_512,maze512-16-0}, --map {64room_001,AR0406SR,AR0413SR,London_1_512,maze512-16-0}
                         Kartan nimi, jolle testit ajetaan.
   -t {1,2}, --test {1,2}
-                        Testin tyyppi, 1: ajetaan vain tietty(jä) skenaario(ita), 2: ajetaan x määrä satunnaisia skenaarioita
+                        Testin tyyppi, 1: ajetaan vain tietty(jä) skenaario(ita), 2: ajetaan x määrä satunnaisia
+                        skenaarioita
   -s SCENARIO [SCENARIO ...], --scenarios SCENARIO [SCENARIO ...]
-                        Ajettavien skenaarioiden indeksit, jos test_type=1. Huom. eri kartoilla on eri määrä ajettavia skenaarioita
+                        Ajettavien skenaarioiden indeksit, jos test_type=1. Huom. eri kartoilla on eri määrä ajettavia
+                        skenaarioita
   -c AMOUNT, --count AMOUNT
                         Satunnaisten skenaarioiden lukumäärä, jos test_type=2
   -r [SHORTEST_RANGE ...], --range [SHORTEST_RANGE ...]
-                        Määrittää satunnaisille skenaarioille lyhimmän polun ala- ja/tai ylärajan, jos test_type=2. Arvoksi voi antaa joko vain alarajan tai ala- ja ylärajan. Arvoja voi syöttää enemmän kuin kaksi, mutta vain kaksi ensimmäistä otetaan huomioon.
-  -i, --images          Valinnalla voidaan estää pääohjelmaa piirtämästä kuvia algoritmien testeistä. Oletuksena kuvat piirretään
+                        Määrittää satunnaisille skenaarioille lyhimmän polun ala- ja/tai ylärajan, jos test_type=2.
+                        Arvoksi voi antaa joko vain alarajan tai ala- ja ylärajan. Arvoja voi syöttää enemmän kuin
+                        kaksi, mutta vain kaksi ensimmäistä otetaan huomioon.
+  -i, --images          Valinnalla voidaan estää pääohjelmaa piirtämästä kuvia algoritmien testeistä. Oletuksena kuvat
+                        piirretään
   -a {dijkstra,a_star,jps} [{dijkstra,a_star,jps} ...], --algorithms {dijkstra,a_star,jps} [{dijkstra,a_star,jps} ...]
                         Valinnalla voidaan valita, mitä algoritmeja halutaan testata
   -p, --path            Löydetyn polun pituus tulostetaan
-  --allow_corner_cuts   Oletuksena esteiden kulmien leikkausta ei sallita. Tällä argumentilla voidaan se mahdollistaa, jolloin löydetyt polut ovat lyhyempiä.
+  --allow_corner_cuts   Oletuksena esteiden kulmien leikkausta ei sallita. Tällä argumentilla voidaan se mahdollistaa,
+                        jolloin löydetyt polut ovat lyhyempiä.
   -g, --gif             Muodosta polunetsinnästä gif-animaatio.
 ```
 **Huom #1!**, argumentilla -c ei ole mitään ylärajaa, joten suorituksessa voi kestää todella kauan jos se on paljon kymmentä korkeampi. Keskeyttäminen tapahtui näppäinyhdistelmällä `CTRL+C` .
