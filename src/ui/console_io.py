@@ -5,6 +5,7 @@ class ConsoleIO:
         print(user_input)
 
     def read(self, prompt: str, expected_values: list):
+        expected_values = list(map(str, expected_values))
         user_input = None
         while user_input not in expected_values:
             user_input = input(prompt)

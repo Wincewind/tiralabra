@@ -60,7 +60,7 @@ suorita 1-10 satunnaista skenaariota (2):"
     and all(index in scens_to_test for index in scen_idxs)
     if choice == "1" and not all_chosen_scens_are_valid:
         prompt = f"Valitse skenaarion indeksi välillä 0-{len(scens)-1}:"
-        scens_to_test = [scens[int(io.read(prompt, scen_idxs))]]
+        scens_to_test = [scens[int(io.read(prompt, scens_to_test))]]
     elif choice == "1" and all_chosen_scens_are_valid:
         scens_to_test = [scen for scen in scens if scen["index"] in scen_idxs]
     elif choice == "2" and cl_args.amount not in range(1, len(scens)):
