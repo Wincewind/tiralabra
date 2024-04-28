@@ -128,7 +128,7 @@ poetry run pylint src
 ### Docker
 
 Projektin 
-[029975e](https://github.com/Wincewind/tiralabra/tree/029975ea7b1771d44a26963eaa35b5a22636d7a0)-commitista on nyt tehty myös Docker image, eli ohjelmaa voi myös suorittaa konteilla. Linkki Docker hub:iin on [tässä](https://hub.docker.com/repository/docker/wincewind/pathfinding_simulation/general).
+[029975e](https://github.com/Wincewind/tiralabra/tree/029975ea7b1771d44a26963eaa35b5a22636d7a0)-commitista on nyt tehty myös Docker image, eli ohjelmaa voi myös suorittaa konteilla. Linkki Docker hub:iin on [tässä](https://hub.docker.com/r/wincewind/pathfinding_simulation).
 
 Jos koneella on Docker asennettuna, voi ohjelmaa ajaa tällöin komennolla:
 ```
