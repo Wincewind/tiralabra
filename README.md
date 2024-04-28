@@ -124,3 +124,16 @@ Laatutarkistuksen pytyy suorittamaan [.pylintrc](.pylintrc) määritysten mukais
 ```bash
 poetry run pylint src
 ```
+
+### Docker
+
+Projektin 
+[029975e](https://github.com/Wincewind/tiralabra/tree/029975ea7b1771d44a26963eaa35b5a22636d7a0)-commitista on nyt tehty myös Docker image, eli ohjelmaa voi myös suorittaa konteilla. Linkki Docker hub:iin on [tässä](https://hub.docker.com/repository/docker/wincewind/pathfinding_simulation/general).
+
+Jos koneella on Docker asennettuna, voi ohjelmaa ajaa tällöin komennolla:
+```
+docker run -it -v "$(pwd)/output:/usr/src/app/output" wincewind/pathfinding_simulation
+```
+Asetuksella `-v "$(pwd)/output:/usr/src/app/output"` saadaan kontin output kansioon muodostuvat kuvat ja gif:it siirrettyä lokaalisti $(pwd)/output-kansioon. Jos suorituksen aikaisessa hakemistossa ei ole output kansiota, se muodostetaan automaattisesti. Windows:in oletuskomentokehotteessa saattaa joutua käyttämään `$(pwd)` sijasta `%cd%`.
+
+Docker:lla suorittaessa voi myös käyttää komentorivi-argumentteja. Ne tulee antaa `wincewind/pathfinding_simulation` jälkeen.
